@@ -29,6 +29,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".lgs_MainActivity" />
+
+        <activity android:name=".MapActivity"/>
     </application>
 
 </manifest>
