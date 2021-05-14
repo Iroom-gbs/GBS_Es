@@ -19,6 +19,7 @@ class WeeklyFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
@@ -28,14 +29,15 @@ class WeeklyFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_weekly, container, false)
     }
+
     private fun setMealText() {
         val mealText = view?.findViewById<TextView>(R.id.mealText)
-        mealText.setText((activity as MealData)getMealData())
+        mealText?.setText(MealData.getMealData());
     }
 
     override fun onStart() {
         super.onStart()
 
-        initUI()
+        setMealText()
     }
 }
