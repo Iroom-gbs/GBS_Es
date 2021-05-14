@@ -5,18 +5,23 @@
     android:layout_height="match_parent"
     android:background="#303030"
     tools:context=".ui.WeeklyFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+        <ScrollView
+        android:id="@+id/scv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="개발중 입니다."
-        android:textSize="34sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/mealText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>
