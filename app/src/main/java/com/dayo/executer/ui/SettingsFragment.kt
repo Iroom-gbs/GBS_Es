@@ -49,6 +49,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         classPreferences.setOnPreferenceChangeListener { _, newValue ->
             DataManager.classInfo = newValue.toString()
+            DataManager.saveSettings()
+            DataManager.loadSettings()
             true
         }
 

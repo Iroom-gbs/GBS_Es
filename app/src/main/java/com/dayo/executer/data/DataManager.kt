@@ -7,15 +7,21 @@ import com.dayo.executer.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class DataManager {
-    companion object{
+    companion object {
+        var weeklyTimeTableData = mutableListOf<MutableList<TimeTableData>>()
         var timeTableData = mutableListOf<TimeTableData>()
         var todayAblrTableData = mutableListOf<AblrData>()
         var tmpAblrData = mutableListOf<AblrData>()
+        var mealData = mutableListOf<MutableList<MealData>>()
 
         private val sharedPref = App.appContext!!.getSharedPreferences("settings", MODE_PRIVATE)
         var ablrID = ""
@@ -54,26 +60,11 @@ class DataManager {
 
         fun loadSettings() {
             todayAblrTableData = mutableListOf()
-            timeTableData = mutableListOf()
-            var tableData = ""
-            CoroutineScope(Dispatchers.Default).launch {
-                //val doc = Jsoup.connect("http://34.70.245.122/timetable/${classInfo.replace('-', '0')}/${SimpleDateFormat("yyyy-MM-dd").format(Date())}.html").get()
-                val doc = Jsoup.connect("http://34.70.245.122/timetable/101/2021-05-04.html").get()
-                tableData = doc.body().text()
-            }
-            while (tableData == "") {
-                Thread.sleep(1)
-            }
-            for(i in TimeTableData.stringToTimeTableData(tableData))
-                timeTableData.add(i)
-            /*
-            var ablrData = "18 50 19 40 note1 19 50 20 40 note1 20 50 21 30 note1 21 40 23 59 s15" // => Format
-            for(i in AblrData.stringToAblrData(ablrData))
-                todayAblrTableData.add(i)
-            */
+            mealData = mutableListOf()
+
             dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
             var ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
-            for(i in AblrData.stringToAblrData(ablrData))
+            for (i in AblrData.stringToAblrData(ablrData))
                 todayAblrTableData.add(i)
             ablrID = sharedPref.getString("ablrID", "")!!
             ablrPW = sharedPref.getString("ablrPW", "")!!
@@ -87,6 +78,60 @@ class DataManager {
             noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
             tmpAblrData = mutableListOf()
             tmpAblrData.addAll(todayAblrTableData)
+            loadNetworkData()
+        }
+
+        fun loadNetworkData() {
+            var tableData = ""
+            CoroutineScope(Dispatchers.Default).launch {
+                val doc =
+                    Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
+                        .ignoreContentType(true).get()
+                tableData = doc.body().text()
+            }
+            while (tableData == "")
+                Thread.sleep(100)
+            tableData = tableData.substring(1, tableData.length - 1)
+            Log.d("asdf", tableData)
+            if(tableData == "not parsed yet"){
+                timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
+            }
+            else {
+                weeklyTimeTableData = TimeTableData.stringToTimeTableData(tableData)
+                timeTableData = weeklyTimeTableData[dayOfWeek - 1]
+                if (timeTableData.size == 0)
+                    timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
+            }
+            var mdt = ""
+            CoroutineScope(Dispatchers.Default).launch {
+                val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
+                    .ignoreContentType(true).get()
+                mdt = doc.body().text()
+                Log.d("asdf", mdt)
+            }
+            while(mdt == "")
+                Thread.sleep(100)
+            mdt = mdt.substring(1, mdt.length - 1)
+            var idx = 0
+            if(mdt == "Not parsed yet"){
+                mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
+            }
+            else if(mdt == ""){
+                mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
+            }
+            else {
+                mealData.add(mutableListOf())
+                for (x in mdt.split(' ')) {
+                    if (x == "*|") {
+                        mealData.add(mutableListOf())
+                        Log.d("asdf", mealData[idx].joinToString())
+                        idx++
+                        if (idx == 3) break
+                    } else {
+                        mealData[idx].add(MealData.stringToMealData(x))
+                    }
+                }
+            }
         }
     }
 }

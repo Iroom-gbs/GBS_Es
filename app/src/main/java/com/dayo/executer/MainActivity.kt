@@ -9,6 +9,7 @@ import android.net.NetworkRequest
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -20,6 +21,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.dayo.executer.data.DataManager
 import com.dayo.executer.ui.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,6 +80,7 @@ class MainActivity : AppCompatActivity() {
     val mnavviewitemselectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item->
         when(item.itemId) {
             R.id.navigation_home -> {
+                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.VISIBLE
                 var navView: BottomNavigationView = findViewById(R.id.nav_view)
                 var menunav: Menu = navView.menu
                 var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
@@ -89,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.navigation_weekly -> {
+                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
                 var navView: BottomNavigationView = findViewById(R.id.nav_view)
                 var menunav: Menu = navView.menu
                 var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
@@ -100,6 +104,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.navigation_lost_thing -> {
+                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
                 var navView: BottomNavigationView = findViewById(R.id.nav_view)
                 var menunav: Menu = navView.menu
                 var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
@@ -111,6 +116,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.navigation_setting -> {
+                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
                 var navView: BottomNavigationView = findViewById(R.id.nav_view)
                 var menunav: Menu = navView.menu
                 var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
@@ -122,6 +128,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.navigation_map -> {
+                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
                 var navView: BottomNavigationView = findViewById(R.id.nav_view)
                 var menunav: Menu = navView.menu
                 var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)

@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat.startForegroundService
 import com.dayo.executer.*
 import com.dayo.executer.data.AblrData
 import com.dayo.executer.data.DataManager
+import com.dayo.executer.data.MealData
 import com.dayo.executer.data.TimeTableData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -34,17 +35,16 @@ class HomeFragment : Fragment() {
 
         val sv = view?.findViewById<ScrollView>(R.id.scv)
         val timeTable = view?.findViewById<TableLayout>(R.id.timeTable)
-        val ablrTable = view?.findViewById<TableLayout>(R.id.ablrTable)
         val asckBtn = view?.findViewById<Button>(R.id.sckBtn)
         val applyAblrBtn = view?.findViewById<Button>(R.id.applyAblrBtn)
+        val mealTable = view?.findViewById<TableLayout>(R.id.mealTable)
 
         timeTable?.removeAllViews()
-        ablrTable?.removeAllViews()
 
         sv?.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
-            if (oldScrollY - 10 > scrollY)
-                nav.visibility = View.INVISIBLE
-            else if (oldScrollY + 10 < scrollY)
+            if (oldScrollY - 5 > scrollY)
+                nav.visibility = View.GONE
+            else if (oldScrollY + 5 < scrollY)
                 nav.visibility = View.VISIBLE
         }
 
@@ -63,28 +63,59 @@ class HomeFragment : Fragment() {
         for(i in DataManager.timeTableData)
             timeTable?.addView(TimeTableRow(m, i))
 
-        ablrTable?.removeAllViews()
-        if(DataManager.noTempDataInHomeFragment)
-            for(i in DataManager.todayAblrTableData)
-                ablrTable?.addView(AblrTableRow(m, i))
-        else for(i in DataManager.tmpAblrData)
-            ablrTable?.addView(AblrTableRow(m, i))
-
         applyAblrBtn?.setOnClickListener {
             val intent = Intent(activity, AblrService::class.java)
             if(DataManager.noTempDataInHomeFragment)
                 intent.putExtra("ablr", AblrData.ablrDataToString(DataManager.todayAblrTableData))
             else intent.putExtra("ablr", AblrData.ablrDataToString(DataManager.tmpAblrData))
             startForegroundService(activity as MainActivity, intent)
-            //startActivity(Intent(activity, EditAblrActivity::class.java).putExtra("edt", 1))
-            //startActivity(Intent(activity, EditAblrActivity::class.java))
         }
 
-        view?.findViewById<FloatingActionButton>(R.id.addAblrDataFab)!!.setOnClickListener {
+        mealTable?.removeAllViews()
+        for(i in DataManager.mealData){
+            for(j in i){
+                mealTable?.addView(MealTableRow(activity as MainActivity, j))
+            }
+            mealTable?.addView(BlankTableRow(activity as MainActivity))
+        }
+
+        initAblrTable()
+
+        m.findViewById<FloatingActionButton>(R.id.addAblrDataFab)!!.setOnClickListener {
             val intent = Intent(activity, EditAblrActivity::class.java)
             if(!DataManager.noTempDataInHomeFragment)
                 intent.putExtra("dataInfo", "tmp")
             startActivity(intent)
+        }
+    }
+
+    fun initAblrTable() {
+        val ablrTable = view?.findViewById<TableLayout>(R.id.ablrTable)
+        ablrTable?.removeAllViews()
+        if(DataManager.noTempDataInHomeFragment)
+            for(i in DataManager.todayAblrTableData.indices) {
+                val row = AblrTableRow(m, DataManager.todayAblrTableData[i])
+                row.editBtn.setOnClickListener {
+                    startActivity(Intent(activity, EditAblrActivity::class.java).putExtra("edt", i))
+                }
+                row.removeBtn.setOnClickListener {
+                    DataManager.todayAblrTableData.removeAt(i)
+                    DataManager.saveSettings()
+                    initAblrTable()
+                }
+                ablrTable?.addView(row)
+            }
+        else for(i in DataManager.tmpAblrData.indices) {
+            val row = AblrTableRow(m, DataManager.tmpAblrData[i])
+            row.editBtn.setOnClickListener {
+                startActivity(Intent(activity, EditAblrActivity::class.java).putExtra("edt", i).putExtra("dataInfo", "tmp"))
+            }
+            row.removeBtn.setOnClickListener {
+                DataManager.tmpAblrData.removeAt(i)
+                DataManager.saveSettings()
+                initAblrTable()
+            }
+            ablrTable?.addView(row)
         }
     }
 
@@ -94,17 +125,52 @@ class HomeFragment : Fragment() {
         initUI()
     }
 
+    class TextRow(context: Context, text: String): TableRow(context) {
+        val space = TextView(context)
+        private fun addView(){
+            super.removeAllViews()
+            super.addView(space)
+        }
+        init{
+            space.text = text
+            addView()
+        }
+    }
+
+    fun BlankTableRow(context: Context): TableRow{
+        return TextRow(context, " ")
+    }
+
+    class MealTableRow(context: Context, mealData: MealData): TableRow(context) {
+        var mealInfo: TextView = TextView(context)
+
+        private fun addView(){
+            super.removeAllViews()
+            super.addView(mealInfo)
+        }
+        init{
+            mealInfo.text = mealData.menu
+            addView()
+        }
+    }
+
     class AblrTableRow(context: Context, ablrData: AblrData): TableRow(context) {
         var timeInfo: TextView = TextView(context)
         var subjectInfo: TextView = TextView(context)
+        var editBtn: Button = Button(context)
+        var removeBtn: Button = Button(context)
 
         private fun addView() {
             super.removeAllViews()
             super.addView(timeInfo)
             super.addView(subjectInfo)
+            super.addView(editBtn)
+            super.addView(removeBtn)
         }
 
         init {
+            editBtn.text = "EDIT"
+            removeBtn.text = "REMOVE"
             timeInfo.text = ablrData.getFullTime()
             subjectInfo.text = resources.getStringArray(R.array.place_list)[resources.getStringArray(R.array.place_data_list).indexOf(ablrData.locationInfo)]
             addView()
@@ -112,6 +178,7 @@ class HomeFragment : Fragment() {
     }
 
     class TimeTableRow(context: Context, timeTableData: TimeTableData): TableRow(context) {
+        var timeIndex: TextView = TextView(context)
         var timeInfo: TextView = TextView(context)
         var subjectInfo: TextView = TextView(context)
         var tInfo: TextView = TextView(context)
@@ -120,6 +187,7 @@ class HomeFragment : Fragment() {
 
         private fun addView() {
             super.removeAllViews()
+            super.addView(timeIndex)
             super.addView(timeInfo)
             super.addView(subjectInfo)
             super.addView(tInfo)
@@ -128,6 +196,7 @@ class HomeFragment : Fragment() {
         }
 
         init {
+            timeIndex.text = timeTableData.timeidx
             timeInfo.text = timeTableData.timeInfo
             subjectInfo.text = timeTableData.subjectInfo
             tInfo.text = timeTableData.teacherInfo

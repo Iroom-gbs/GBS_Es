@@ -26,6 +26,11 @@
                 android:textSize="24sp" />
 
             <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/mealTable" />
+
+            <TableLayout
                 android:id="@+id/timeTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -48,43 +53,10 @@
 
             </TableLayout>
 
-            <!-- DEBUG for scroll view
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100dp"
-                android:text="asdf" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100dp"
-                android:text="asdfasdfasdf" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100dp"
-                android:text="asdfasdfasdf" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100dp"
-                android:text="asdfasdfasdf" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100dp"
-                android:text="asdfasdfasdf" />
-                -->
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
         </LinearLayout>
-    </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="30dp"
-        android:id="@+id/addAblrDataFab" />
+    </ScrollView>
 </FrameLayout>
