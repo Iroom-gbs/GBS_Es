@@ -159,9 +159,17 @@ class MainActivity : AppCompatActivity() {
         if(fragment!=active) {
             val ft: FragmentTransaction= supportFragmentManager.beginTransaction()
             ft.replace(R.id.nav_host_fragment, fragment)
-            ft.addToBackStack(null)
             ft.commit()
             active = fragment
         }
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setMessage("종료하시겠습니까?")
+            .setTitle("종료")
+            .setPositiveButton("OK"){ _, _ -> finishAndRemoveTask()}
+            .setNegativeButton("NO"){ _, _ -> }
+            .create().show()
     }
 }
