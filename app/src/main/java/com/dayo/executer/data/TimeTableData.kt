@@ -2,8 +2,11 @@ package com.dayo.executer.data
 
 import android.content.Context
 import android.util.Log
+import android.view.Gravity
+import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.transition.Slide
 
 data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectInfo: String, val teacherInfo: String, val roomInfo: String, val elseInfo: String) {
     companion object {
@@ -38,6 +41,23 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
                 idx++
             }
             return rtn
+        }
+    }
+
+    class SimpleTimeTableRow(context: Context, val timeTableData: TimeTableData): TableRow(context) {
+
+        fun addView() {
+            super.removeAllViews()
+            super.setOrientation(VERTICAL)
+            super.setGravity(Gravity.CENTER)
+            val tx = TextView(context)
+            tx.gravity = Gravity.CENTER
+            tx.text = "\n${timeTableData.subjectInfo}\n${timeTableData.teacherInfo}\n${timeTableData.roomInfo}"
+            super.addView(tx)
+        }
+
+        init {
+            addView()
         }
     }
 

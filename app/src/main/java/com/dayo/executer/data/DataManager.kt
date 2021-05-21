@@ -145,7 +145,6 @@ class DataManager {
         }
         init{
             try {
-                val builder = NetworkRequest.Builder()
                 (App.appContext!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
                     .registerDefaultNetworkCallback(object : NetworkCallback() {
                         override fun onAvailable(network: Network) {
@@ -155,8 +154,7 @@ class DataManager {
                         override fun onLost(network: Network) {
                             online = false
                         }
-                    }
-                    )
+                    })
                 online = false
             } catch (e: Exception) {
                 online = false
