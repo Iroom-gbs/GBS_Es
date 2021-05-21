@@ -49,10 +49,10 @@ class HomeFragment : Fragment() {
         }
 
         //Wait for INIT vifo
-        while (m.vifo == "")
+        while (DataManager.vifo == "")
             Thread.sleep(1)
 
-        if (m.packageManager.getPackageInfo("com.dayo.executer", PackageManager.GET_ACTIVITIES).versionName != m.vifo.split(' ')[2])
+        if (m.packageManager.getPackageInfo("com.dayo.executer", PackageManager.GET_ACTIVITIES).versionName != DataManager.vifo.split(' ')[2])
             Toast.makeText(activity, "업데이트가 필요합니다.", Toast.LENGTH_LONG).show()
 
         asckBtn?.setOnClickListener {

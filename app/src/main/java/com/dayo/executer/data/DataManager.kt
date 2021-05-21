@@ -1,17 +1,18 @@
 package com.dayo.executer.data
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import android.net.NetworkRequest
 import android.util.Log
 import androidx.core.content.edit
 import com.dayo.executer.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -40,6 +41,10 @@ class DataManager {
 
         var dayOfWeek = -1
 
+        var online = false
+
+        var vifo = ""
+
         fun saveSettings() {
             sharedPref.edit {
                 putString("ablr$dayOfWeek", AblrData.ablrDataToString(todayAblrTableData))
@@ -58,7 +63,7 @@ class DataManager {
             }
         }
 
-        fun loadSettings() {
+        fun loadSettings(): Boolean {
             todayAblrTableData = mutableListOf()
             mealData = mutableListOf()
 
@@ -78,10 +83,15 @@ class DataManager {
             noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
             tmpAblrData = mutableListOf()
             tmpAblrData.addAll(todayAblrTableData)
-            loadNetworkData()
+            return loadNetworkData()
         }
 
-        fun loadNetworkData() {
+        fun loadNetworkData(): Boolean {
+            if(!online) return false
+            CoroutineScope(Dispatchers.Default).launch {
+                val doc = Jsoup.connect("http://34.70.245.122/version.html").get()
+                vifo = doc.body().text() //ablr asck ex
+            }
             var tableData = ""
             CoroutineScope(Dispatchers.Default).launch {
                 val doc =
@@ -131,6 +141,26 @@ class DataManager {
                         mealData[idx].add(MealData.stringToMealData(x))
                     }
                 }
+            }
+            return true
+        }
+        init{
+            try {
+                val builder = NetworkRequest.Builder()
+                (App.appContext!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+                    .registerDefaultNetworkCallback(object : NetworkCallback() {
+                        override fun onAvailable(network: Network) {
+                            online = true
+                        }
+
+                        override fun onLost(network: Network) {
+                            online = false
+                        }
+                    }
+                    )
+                online = false
+            } catch (e: Exception) {
+                online = false
             }
         }
     }
