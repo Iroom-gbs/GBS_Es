@@ -29,13 +29,12 @@ class DataManager {
         var ablrPW = ""
         var asckPW = ""
         var classInfo = ""
+        var noTempDataInHomeFragment = false
 
         var asckDt = 0L
         var asckDsel = 0L
         var asckDs = 0L
         var asckUseAdvOpt = false
-
-        var noTempDataInHomeFragment = false
 
         var lowProtect = false
 
@@ -86,10 +85,10 @@ class DataManager {
             return loadNetworkData()
         }
 
-        fun loadNetworkData(): Boolean {
+        private fun loadNetworkData(): Boolean {
             if(!online) return false
             CoroutineScope(Dispatchers.Default).launch {
-                val doc = Jsoup.connect("http://34.70.245.122/version.html").get()
+                val doc = Jsoup.connect("http://34.70.245.122/version.html").get() //TODO: Move to new server
                 vifo = doc.body().text() //ablr asck ex
             }
             var tableData = ""
@@ -126,7 +125,7 @@ class DataManager {
             if(mdt == "Not parsed yet"){
                 mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
             }
-            else if(mdt == ""){
+            else if(mdt == "*| *| *| "){
                 mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
             }
             else {

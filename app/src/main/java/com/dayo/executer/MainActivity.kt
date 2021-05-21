@@ -20,12 +20,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 //TODO: Convert AppCompatActivity to Activity
 class MainActivity : AppCompatActivity() {
-    val fragmenthome: Fragment = HomeFragment()
-    val fragmentweelky:Fragment = WeeklyFragment()
-    val fragmentlostthing: Fragment = LostThingInfoFragment()
-    val fragmentsetting: Fragment = SettingsFragment()
-    val fragmentmap: Fragment = MapFragment()
-    var active : Fragment = fragmenthome
+    private val fragmenthome: Fragment = HomeFragment()
+    private val fragmentweelky:Fragment = WeeklyFragment()
+    private val fragmentlostthing: Fragment = LostThingInfoFragment()
+    private val fragmentsetting: Fragment = SettingsFragment()
+    private val fragmentmap: Fragment = MapFragment()
+    private var active : Fragment = fragmenthome
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    val mnavviewitemreselectedListener = BottomNavigationView.OnNavigationItemReselectedListener { item->
+    private val mnavviewitemreselectedListener = BottomNavigationView.OnNavigationItemReselectedListener { item->
         when(item.itemId) {
             R.id.navigation_map -> {
                 var drawer: SlidingUpPanelLayout = findViewById(R.id.main_panel)
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
-    val mnavviewitemselectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item->
+    private val mnavviewitemselectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item->
         when(item.itemId) {
             R.id.navigation_home -> {
                 findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.VISIBLE
@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun changeFragment(fragment: Fragment) {
+    private fun changeFragment(fragment: Fragment) {
         if(fragment!=active) {
             val ft: FragmentTransaction= supportFragmentManager.beginTransaction()
             ft.replace(R.id.nav_host_fragment, fragment)

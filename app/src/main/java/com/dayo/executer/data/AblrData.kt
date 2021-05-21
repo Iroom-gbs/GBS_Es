@@ -1,7 +1,12 @@
 package com.dayo.executer.data
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.widget.Button
+import android.widget.TableRow
+import android.widget.TextView
+import com.dayo.executer.R
 import java.lang.IndexOutOfBoundsException
 
 data class AblrData(var sth: String, var stm: String, var eth: String, var etm: String, var locationInfo: String) {
@@ -47,6 +52,30 @@ data class AblrData(var sth: String, var stm: String, var eth: String, var etm: 
 
     override fun toString(): String {
         return "$sth $stm $eth $etm $locationInfo "
+    }
+
+    class AblrTableRow(context: Context, ablrData: AblrData): TableRow(context) {
+        var timeInfo: TextView = TextView(context)
+        var subjectInfo: TextView = TextView(context)
+        var editBtn: Button = Button(context)
+        var removeBtn: Button = Button(context)
+
+        private fun addView() {
+            super.removeAllViews()
+            super.addView(timeInfo)
+            super.addView(subjectInfo)
+            super.addView(editBtn)
+            super.addView(removeBtn)
+        }
+
+        init {
+            editBtn.text = "EDIT"
+            removeBtn.text = "REMOVE"
+            timeInfo.text = ablrData.getFullTime()
+            subjectInfo.text = resources.getStringArray(R.array.place_list)[resources.getStringArray(
+                R.array.place_data_list).indexOf(ablrData.locationInfo)]
+            addView()
+        }
     }
 }
 

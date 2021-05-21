@@ -61,7 +61,7 @@ class HomeFragment : Fragment() {
 
         timeTable?.removeAllViews()
         for(i in DataManager.timeTableData)
-            timeTable?.addView(TimeTableRow(m, i))
+            timeTable?.addView(TimeTableData.TimeTableRow(m, i))
 
         applyAblrBtn?.setOnClickListener {
             val intent = Intent(activity, AblrService::class.java)
@@ -74,9 +74,9 @@ class HomeFragment : Fragment() {
         mealTable?.removeAllViews()
         for(i in DataManager.mealData){
             for(j in i){
-                mealTable?.addView(MealTableRow(activity as MainActivity, j))
+                mealTable?.addView(MealData.MealTableRow(activity as MainActivity, j))
             }
-            mealTable?.addView(BlankTableRow(activity as MainActivity))
+            mealTable?.addView(TextRow.BlankTableRow(activity as MainActivity))
         }
 
         initAblrTable()
@@ -94,7 +94,7 @@ class HomeFragment : Fragment() {
         ablrTable?.removeAllViews()
         if(DataManager.noTempDataInHomeFragment)
             for(i in DataManager.todayAblrTableData.indices) {
-                val row = AblrTableRow(m, DataManager.todayAblrTableData[i])
+                val row = AblrData.AblrTableRow(m, DataManager.todayAblrTableData[i])
                 row.editBtn.setOnClickListener {
                     startActivity(Intent(activity, EditAblrActivity::class.java).putExtra("edt", i))
                 }
@@ -106,7 +106,7 @@ class HomeFragment : Fragment() {
                 ablrTable?.addView(row)
             }
         else for(i in DataManager.tmpAblrData.indices) {
-            val row = AblrTableRow(m, DataManager.tmpAblrData[i])
+            val row = AblrData.AblrTableRow(m, DataManager.tmpAblrData[i])
             row.editBtn.setOnClickListener {
                 startActivity(Intent(activity, EditAblrActivity::class.java).putExtra("edt", i).putExtra("dataInfo", "tmp"))
             }
@@ -123,86 +123,5 @@ class HomeFragment : Fragment() {
         super.onStart()
 
         initUI()
-    }
-
-    class TextRow(context: Context, text: String): TableRow(context) {
-        val space = TextView(context)
-        private fun addView(){
-            super.removeAllViews()
-            super.addView(space)
-        }
-        init{
-            space.text = text
-            addView()
-        }
-    }
-
-    fun BlankTableRow(context: Context): TableRow{
-        return TextRow(context, " ")
-    }
-
-    class MealTableRow(context: Context, mealData: MealData): TableRow(context) {
-        var mealInfo: TextView = TextView(context)
-
-        private fun addView(){
-            super.removeAllViews()
-            super.addView(mealInfo)
-        }
-        init{
-            mealInfo.text = mealData.menu
-            addView()
-        }
-    }
-
-    class AblrTableRow(context: Context, ablrData: AblrData): TableRow(context) {
-        var timeInfo: TextView = TextView(context)
-        var subjectInfo: TextView = TextView(context)
-        var editBtn: Button = Button(context)
-        var removeBtn: Button = Button(context)
-
-        private fun addView() {
-            super.removeAllViews()
-            super.addView(timeInfo)
-            super.addView(subjectInfo)
-            super.addView(editBtn)
-            super.addView(removeBtn)
-        }
-
-        init {
-            editBtn.text = "EDIT"
-            removeBtn.text = "REMOVE"
-            timeInfo.text = ablrData.getFullTime()
-            subjectInfo.text = resources.getStringArray(R.array.place_list)[resources.getStringArray(R.array.place_data_list).indexOf(ablrData.locationInfo)]
-            addView()
-        }
-    }
-
-    class TimeTableRow(context: Context, timeTableData: TimeTableData): TableRow(context) {
-        var timeIndex: TextView = TextView(context)
-        var timeInfo: TextView = TextView(context)
-        var subjectInfo: TextView = TextView(context)
-        var tInfo: TextView = TextView(context)
-        var elseInfo: TextView = TextView(context)
-        var roomInfo: TextView = TextView(context)
-
-        private fun addView() {
-            super.removeAllViews()
-            super.addView(timeIndex)
-            super.addView(timeInfo)
-            super.addView(subjectInfo)
-            super.addView(tInfo)
-            super.addView(roomInfo)
-            super.addView(elseInfo)
-        }
-
-        init {
-            timeIndex.text = timeTableData.timeidx
-            timeInfo.text = timeTableData.timeInfo
-            subjectInfo.text = timeTableData.subjectInfo
-            tInfo.text = timeTableData.teacherInfo
-            elseInfo.text = timeTableData.elseInfo
-            roomInfo.text = timeTableData.roomInfo
-            addView()
-        }
     }
 }
