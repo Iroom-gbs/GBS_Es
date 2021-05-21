@@ -6,7 +6,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import android.app.AlertDialog
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -46,14 +45,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
                  */
-            Log.d("asdf", "asdf")
         }
         else {
             val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
             val navController = findNavController(R.id.nav_host_fragment)
-            // Passing each menu ID as a set of Ids because each
-            // menu should be considered as top level destinations.
 
             val appBarConfiguration = AppBarConfiguration(
                 setOf(
@@ -69,7 +65,6 @@ class MainActivity : AppCompatActivity() {
             navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
             navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
             //navView.setupWithNavController(navController)
-
 
             Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
         }
@@ -149,9 +144,7 @@ class MainActivity : AppCompatActivity() {
                 changeFragment(fragmentmap)
                 true
             }
-            else -> {
-                false
-            }
+            else -> false
         }
     }
 
