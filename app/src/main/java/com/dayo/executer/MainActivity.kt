@@ -19,7 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-
+//TODO: Convert AppCompatActivity to Activity
 class MainActivity : AppCompatActivity() {
     val fragmenthome: Fragment = HomeFragment()
     val fragmentweelky:Fragment = WeeklyFragment()
@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         if(!DataManager.loadSettings()){
             Toast.makeText(this, "인터넷이 연결되어있지 않아 앱을 종료합니다.", Toast.LENGTH_LONG).show()
             finishAndRemoveTask()
+            //TODO: Why this alert dialog creation is not working
                 /*
             AlertDialog.Builder(this)
                 .setTitle("안내")
@@ -44,7 +45,6 @@ class MainActivity : AppCompatActivity() {
                     finishAndRemoveTask()
                 }
                 .show()
-
                  */
             Log.d("asdf", "asdf")
         }
