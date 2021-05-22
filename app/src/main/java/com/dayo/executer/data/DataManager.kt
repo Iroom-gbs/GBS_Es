@@ -67,6 +67,7 @@ class DataManager {
             mealData = mutableListOf()
 
             dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+            Log.d("asdf", dayOfWeek.toString())
             var ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
             for (i in AblrData.stringToAblrData(ablrData))
                 todayAblrTableData.add(i)
@@ -88,8 +89,10 @@ class DataManager {
         private fun loadNetworkData(): Boolean {
             if(!online) return false
             CoroutineScope(Dispatchers.Default).launch {
-                val doc = Jsoup.connect("http://34.70.245.122/version.html").get() //TODO: Move to new server
+                val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
+                    .ignoreContentType(true).get()
                 vifo = doc.body().text() //ablr asck ex
+                vifo = vifo.substring(1, vifo.length - 1)
             }
             var tableData = ""
             CoroutineScope(Dispatchers.Default).launch {
