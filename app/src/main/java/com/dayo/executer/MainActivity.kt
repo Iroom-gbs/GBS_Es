@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.dayo.executer.data.DataManager
 import com.dayo.executer.ui.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -61,10 +62,10 @@ class MainActivity : AppCompatActivity() {
                 )
             )
 
-            setupActionBarWithNavController(navController, appBarConfiguration)
-            navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
-            navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
-            //navView.setupWithNavController(navController)
+            //setupActionBarWithNavController(navController, appBarConfiguration)
+            //navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
+            //navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
+            navView.setupWithNavController(navController)
 
             Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
         }
@@ -152,6 +153,7 @@ class MainActivity : AppCompatActivity() {
         if(fragment!=active) {
             val ft: FragmentTransaction= supportFragmentManager.beginTransaction()
             ft.replace(R.id.nav_host_fragment, fragment)
+            //ft.detach(active)
             ft.commit()
             active = fragment
         }
