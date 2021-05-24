@@ -30,6 +30,7 @@ class WeeklyFragment : Fragment() {
 
     fun initUI(){
         val weeklyTimeTable = view?.findViewById<TableLayout>(R.id.weeklyTimeTable)
+        weeklyTimeTable?.removeAllViews()
         for(i in 0..8){
             val row = TableRow(activity)
             for(j in 0..5) {
