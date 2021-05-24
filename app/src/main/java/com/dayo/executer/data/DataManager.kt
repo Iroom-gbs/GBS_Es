@@ -36,6 +36,8 @@ class DataManager {
         var asckDs = 0L
         var asckUseAdvOpt = false
 
+        var alwaysReceiveTimeTableData = false
+
         var lowProtect = false
 
         var dayOfWeek = -1
@@ -58,6 +60,7 @@ class DataManager {
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("lowProtect", lowProtect)
                 putBoolean("noTempDataInHomeFragment", noTempDataInHomeFragment)
+                putBoolean("alwaysReceiveTimeTableData", alwaysReceiveTimeTableData)
                 apply()
             }
         }
@@ -81,6 +84,7 @@ class DataManager {
             asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
             lowProtect = sharedPref.getBoolean("lowProtect", false)
             noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
+            alwaysReceiveTimeTableData = sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
             tmpAblrData = mutableListOf()
             tmpAblrData.addAll(todayAblrTableData)
             return loadNetworkData()

@@ -7,8 +7,10 @@ import android.text.InputType
 import android.view.View
 import android.widget.EditText
 import androidx.preference.*
+import com.dayo.executer.FCMService
 import com.dayo.executer.R
 import com.dayo.executer.data.DataManager
+import com.google.firebase.messaging.FirebaseMessaging
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -33,6 +35,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val reloadDataPreference = findPreference<Preference>("reloadData")!!
 
+        val alwaysReceveTimeTableAlert = findPreference<SwitchPreference>("timetable_always")!!
+
         classPreferences.setEntries(R.array.class_list)
         classPreferences.setEntryValues(R.array.class_list)
         classPreferences.value = DataManager.classInfo
@@ -47,8 +51,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         asckDselPreference.text = DataManager.asckDsel.toString()
         asckDsPreference.text = DataManager.asckDs.toString()
 
+        alwaysReceveTimeTableAlert.isChecked = DataManager.alwaysReceiveTimeTableData
+
+
         classPreferences.setOnPreferenceChangeListener { _, newValue ->
+            if(DataManager.alwaysReceiveTimeTableData)
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
             DataManager.classInfo = newValue.toString()
+            FCMService.reinitToken()
+            if(DataManager.alwaysReceiveTimeTableData)
+                FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
             DataManager.saveSettings()
             DataManager.loadSettings()
             true
@@ -126,6 +138,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         reloadDataPreference.setOnPreferenceClickListener {
             DataManager.loadSettings()
+            true
+        }
+
+        alwaysReceveTimeTableAlert.setOnPreferenceChangeListener { _, newValue ->
+            DataManager.alwaysReceiveTimeTableData = newValue as Boolean
+            if(newValue) FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
+            else FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
             true
         }
     }
