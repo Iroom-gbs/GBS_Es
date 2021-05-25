@@ -19,11 +19,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat"
-        android:usesCleartextTraffic="true">
+        android:directBootAware="true"
+        android:usesCleartextTraffic="true" >
         <service
             android:name=".FCMService"
             android:enabled="true"
-            android:exported="false">
+            android:exported="false"
+            android:directBootAware="true" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

@@ -71,6 +71,9 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Dev">
+        <SwitchPreference
+            app:title="Receive DEBUG FCM Data"
+            app:key="debugFCM" />
         <Preference
             app:title="Dayo" />
         <Preference />

@@ -3,6 +3,7 @@ package com.dayo.executer
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Toast
 import com.dayo.executer.data.DataManager
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class FCMService : FirebaseMessagingService() {
     companion object {
         var ALWAYS_RECEVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
+        val DEBUG = "DEBUG"
         fun reinitToken() {
             ALWAYS_RECEVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
         }
@@ -32,7 +34,10 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+
         if(DataManager.alwaysReceiveTimeTableData)
             FirebaseMessaging.getInstance().subscribeToTopic(ALWAYS_RECEVE_TIMETABLE_DATA)
+        if(DataManager.receiveDebugFCMData)
+            FirebaseMessaging.getInstance().subscribeToTopic(DEBUG)
     }
 }

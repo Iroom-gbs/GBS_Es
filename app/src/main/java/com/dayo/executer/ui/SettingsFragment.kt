@@ -37,6 +37,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val alwaysReceveTimeTableAlert = findPreference<SwitchPreference>("timetable_always")!!
 
+        val receiveDebugFCMPreference = findPreference<SwitchPreference>("debugFCM")!!
+
         classPreferences.setEntries(R.array.class_list)
         classPreferences.setEntryValues(R.array.class_list)
         classPreferences.value = DataManager.classInfo
@@ -52,6 +54,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         asckDsPreference.text = DataManager.asckDs.toString()
 
         alwaysReceveTimeTableAlert.isChecked = DataManager.alwaysReceiveTimeTableData
+
+        receiveDebugFCMPreference.isChecked = DataManager.receiveDebugFCMData
 
 
         classPreferences.setOnPreferenceChangeListener { _, newValue ->
@@ -145,6 +149,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             DataManager.alwaysReceiveTimeTableData = newValue as Boolean
             if(newValue) FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
             else FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
+            true
+        }
+
+        receiveDebugFCMPreference.setOnPreferenceChangeListener { _, newValue ->
+            DataManager.receiveDebugFCMData = newValue as Boolean
+            if(newValue) FirebaseMessaging.getInstance().subscribeToTopic(FCMService.DEBUG)
+            else FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.DEBUG)
             true
         }
     }
