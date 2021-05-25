@@ -62,10 +62,10 @@ class MainActivity : AppCompatActivity() {
                 )
             )
 
-            //setupActionBarWithNavController(navController, appBarConfiguration)
-            //navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
-            //navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
-            navView.setupWithNavController(navController)
+            setupActionBarWithNavController(navController, appBarConfiguration)
+            navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
+            navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
+            //navView.setupWithNavController(navController)
 
             Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
         }
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
     private val mnavviewitemreselectedListener = BottomNavigationView.OnNavigationItemReselectedListener { item->
         when(item.itemId) {
             R.id.navigation_map -> {
-                var drawer: SlidingUpPanelLayout = findViewById(R.id.main_panel)
+                val drawer: SlidingUpPanelLayout = findViewById(R.id.main_panel)
                 if(drawer.panelState != SlidingUpPanelLayout.PanelState.DRAGGING)
                 drawer.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED)
                 true
