@@ -1,83 +1,89 @@
 package com.dayo.executer
 
-import android.R.anim
-import android.R.id
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.dayo.executer.data.DataManager
 import com.dayo.executer.ui.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
-import java.net.ConnectException
 
-
+//TODO: Convert AppCompatActivity to Activity
 class MainActivity : AppCompatActivity() {
-    val fragmenthome: Fragment = com.dayo.executer.ui.HomeFragment()
-    val fragmentweelky:Fragment = com.dayo.executer.ui.WeeklyFragment()
-    val fragmentlostthing: Fragment = com.dayo.executer.ui.LostThingInfoFragment()
-    val fragmentsetting: Fragment = com.dayo.executer.ui.SettingsFragment()
-    val fragmentmap: Fragment = com.dayo.executer.ui.MapFragment()
-    var active : Fragment = fragmenthome
+    private val fragmenthome: Fragment = HomeFragment()
+    private val fragmentweelky:Fragment = WeeklyFragment()
+    private val fragmentlostthing: Fragment = LostThingInfoFragment()
+    private val fragmentsetting: Fragment = SettingsFragment()
+    private val fragmentmap: Fragment = MapFragment()
+    private var active : Fragment = fragmenthome
 
-    var vifo = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        DataManager.loadSettings()
+        if(!DataManager.loadSettings()){
+            Toast.makeText(this, "인터넷이 연결되어있지 않아 앱을 종료합니다.", Toast.LENGTH_LONG).show()
+            finishAndRemoveTask()
+            //TODO: Why this alert dialog creation is not working
+                /*
+            AlertDialog.Builder(this)
+                .setTitle("안내")
+                .setMessage("이 앱을 사용하기 위해선 인터넷 연결이 필요합니다.")
+                //.setCancelable(false)
+                .setPositiveButton("OK"){ _, _ ->
+                    finishAndRemoveTask()
+                }
+                .show()
+                 */
+        }
+        else {
+            val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+            val navController = findNavController(R.id.nav_host_fragment)
 
-        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home,
-                R.id.navigation_weekly,
-                R.id.navigation_lost_thing,
-                R.id.navigation_setting,
-                R.id.navigation_map
+            val appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.navigation_home,
+                    R.id.navigation_weekly,
+                    R.id.navigation_lost_thing,
+                    R.id.navigation_setting,
+                    R.id.navigation_map
+                )
             )
-        )
-      
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setOnNavigationItemSelectedListener (mnavviewitemselectedListener)
-        //navView.setupWithNavController(navController)
 
-        try {
-            CoroutineScope(Dispatchers.Default).launch {
-                val doc = Jsoup.connect("http://34.70.245.122/version.html").get()
-                vifo = doc.body().text() //ablr asck ex
-            }
-        }
-        catch(e: ConnectException){
-            Toast.makeText(this, "Failed to collect version info", Toast.LENGTH_LONG).show()
-        }
+            //setupActionBarWithNavController(navController, appBarConfiguration)
+            //navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
+            //navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
+            navView.setupWithNavController(navController)
 
-        Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    val mnavviewitemselectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item->
+    private val mnavviewitemreselectedListener = BottomNavigationView.OnNavigationItemReselectedListener { item->
+        when(item.itemId) {
+            R.id.navigation_map -> {
+                var drawer: SlidingUpPanelLayout = findViewById(R.id.main_panel)
+                if(drawer.panelState != SlidingUpPanelLayout.PanelState.DRAGGING)
+                drawer.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED)
+                true
+            }
+        }
+        false
+    }
+
+    private val mnavviewitemselectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item->
         when(item.itemId) {
             R.id.navigation_home -> {
                 findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.VISIBLE
@@ -139,19 +145,26 @@ class MainActivity : AppCompatActivity() {
                 changeFragment(fragmentmap)
                 true
             }
-            else -> {
-                false
-            }
+            else -> false
         }
     }
 
-    fun changeFragment(fragment: Fragment) {
+    private fun changeFragment(fragment: Fragment) {
         if(fragment!=active) {
             val ft: FragmentTransaction= supportFragmentManager.beginTransaction()
             ft.replace(R.id.nav_host_fragment, fragment)
-            ft.addToBackStack(null)
+            //ft.detach(active)
             ft.commit()
             active = fragment
         }
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setMessage("종료하시겠습니까?")
+            .setTitle("종료")
+            .setPositiveButton("OK"){ _, _ -> finishAndRemoveTask()}
+            .setNegativeButton("NO"){ _, _ -> }
+            .create().show()
     }
 }

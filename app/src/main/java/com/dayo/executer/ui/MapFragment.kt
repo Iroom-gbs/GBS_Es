@@ -27,27 +27,11 @@ class MapFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
-        openPanel()
-        Log.d("asdf", "OpenedPanel")
-        //TODO: AndroidSlidingUpPanel을 이용해서 검색버튼 누르면 검색창 띄우기
+    override fun onStart() {
+        super.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d("asdf", "ClosedPanel")
-    }
-
-    fun openPanel() {
-        m = (activity as MainActivity)
-        var drawer: SlidingUpPanelLayout = m.findViewById(R.id.main_panel)
-        drawer.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED)
-    }
-
-    fun closePanel() {
-        m = (activity as MainActivity)
-        var drawer: SlidingUpPanelLayout = m.findViewById(R.id.main_panel)
-        drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED)
     }
 }

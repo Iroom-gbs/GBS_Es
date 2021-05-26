@@ -9,7 +9,7 @@
     <item
         android:id="@+id/navigation_weekly"
         android:icon="@drawable/ic_line_weight_black_24dp"
-        android:title="급식" />
+        android:title="주간" />
 
     <item
         android:id="@+id/navigation_lost_thing"

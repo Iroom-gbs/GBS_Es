@@ -1,17 +1,18 @@
 package com.dayo.executer.data
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import android.net.NetworkRequest
 import android.util.Log
 import androidx.core.content.edit
 import com.dayo.executer.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -28,17 +29,20 @@ class DataManager {
         var ablrPW = ""
         var asckPW = ""
         var classInfo = ""
+        var noTempDataInHomeFragment = false
 
         var asckDt = 0L
         var asckDsel = 0L
         var asckDs = 0L
         var asckUseAdvOpt = false
 
-        var noTempDataInHomeFragment = false
-
         var lowProtect = false
 
         var dayOfWeek = -1
+
+        var online = false
+
+        var vifo = ""
 
         fun saveSettings() {
             sharedPref.edit {
@@ -58,11 +62,12 @@ class DataManager {
             }
         }
 
-        fun loadSettings() {
+        fun loadSettings(): Boolean {
             todayAblrTableData = mutableListOf()
             mealData = mutableListOf()
 
             dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+            Log.d("asdf", dayOfWeek.toString())
             var ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
             for (i in AblrData.stringToAblrData(ablrData))
                 todayAblrTableData.add(i)
@@ -78,10 +83,17 @@ class DataManager {
             noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
             tmpAblrData = mutableListOf()
             tmpAblrData.addAll(todayAblrTableData)
-            loadNetworkData()
+            return loadNetworkData()
         }
 
-        fun loadNetworkData() {
+        private fun loadNetworkData(): Boolean {
+            if(!online) return false
+            CoroutineScope(Dispatchers.Default).launch {
+                val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
+                    .ignoreContentType(true).get()
+                vifo = doc.body().text() //ablr asck ex
+                vifo = vifo.substring(1, vifo.length - 1)
+            }
             var tableData = ""
             CoroutineScope(Dispatchers.Default).launch {
                 val doc =
@@ -116,7 +128,7 @@ class DataManager {
             if(mdt == "Not parsed yet"){
                 mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
             }
-            else if(mdt == ""){
+            else if(mdt == "*| *| *| "){
                 mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
             }
             else {
@@ -131,6 +143,24 @@ class DataManager {
                         mealData[idx].add(MealData.stringToMealData(x))
                     }
                 }
+            }
+            return true
+        }
+        init{
+            try {
+                (App.appContext!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+                    .registerDefaultNetworkCallback(object : NetworkCallback() {
+                        override fun onAvailable(network: Network) {
+                            online = true
+                        }
+
+                        override fun onLost(network: Network) {
+                            online = false
+                        }
+                    })
+                online = false
+            } catch (e: Exception) {
+                online = false
             }
         }
     }

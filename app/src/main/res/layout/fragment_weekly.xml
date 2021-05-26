@@ -1,28 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#303030"
-    tools:context=".ui.WeeklyFragment">
+    tools:context=".ui.WeeklyFragment"
+    android:orientation="vertical">
 
+    <!-- TODO: Update blank fragment layout -->
     <ScrollView
-        android:id="@+id/scv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="30dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/mealText"
-                android:layout_width="wrap_content"
+            android:orientation="vertical" >
+            <TableLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"/>
-        </LinearLayout>
+                android:id="@+id/weeklyTimeTable"
+                android:stretchColumns="*">
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" "
+                        android:gravity="center" />
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="월"
+                        android:gravity="center" />
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="화"
+                        android:gravity="center" />
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="수"
+                        android:gravity="center" />
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="목"
+                        android:gravity="center" />
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="금"
+                        android:gravity="center" />
+                </TableRow>
+            </TableLayout>
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="75dp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </ScrollView>
-</FrameLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,25 +1,23 @@
 package com.dayo.executer.ui
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.content.ContextCompat
-import com.dayo.executer.*
-import com.dayo.executer.data.AblrData
+import android.widget.LinearLayout
+import android.widget.TableLayout
+import android.widget.TableRow
+import com.dayo.executer.R
 import com.dayo.executer.data.DataManager
-import com.dayo.executer.data.MealData
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.dayo.executer.data.TimeTableData
+import java.lang.IndexOutOfBoundsException
 
 class WeeklyFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -30,14 +28,34 @@ class WeeklyFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_weekly, container, false)
     }
 
-    private fun setMealText() {
-        val mealText = view?.findViewById<TextView>(R.id.mealText)
-        mealText?.setText(MealData.getMealData());
+    fun initUI(){
+        val weeklyTimeTable = view?.findViewById<TableLayout>(R.id.weeklyTimeTable)
+        weeklyTimeTable?.removeAllViews()
+        for(i in 0..8){
+            val row = TableRow(activity)
+            for(j in 0..5) {
+                try {
+                    row.addView(
+                        TimeTableData.SimpleTimeTableRow(
+                            requireActivity().baseContext,
+                            DataManager.weeklyTimeTableData[j][i]
+                        )
+                    )
+                    Log.d("asdf", "$i $j")
+                    Log.d("asdf",
+                        DataManager.weeklyTimeTableData[j][i].toString())
+                }
+                catch(ei: IndexOutOfBoundsException){
+                    row.addView(TextRow.BlankTableRow(requireContext()))
+                }
+            }
+            weeklyTimeTable?.addView(row)
+        }
     }
 
-    override fun onStart() {
+    override fun onStart(){
         super.onStart()
 
-        setMealText()
+        initUI()
     }
 }

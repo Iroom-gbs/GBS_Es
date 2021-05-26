@@ -1,6 +1,12 @@
 package com.dayo.executer.data
 
+import android.content.Context
 import android.util.Log
+import android.view.Gravity
+import android.widget.LinearLayout
+import android.widget.TableRow
+import android.widget.TextView
+import androidx.transition.Slide
 
 data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectInfo: String, val teacherInfo: String, val roomInfo: String, val elseInfo: String) {
     companion object {
@@ -35,6 +41,52 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
                 idx++
             }
             return rtn
+        }
+    }
+
+    class SimpleTimeTableRow(context: Context, val timeTableData: TimeTableData): TableRow(context) {
+
+        fun addView() {
+            super.removeAllViews()
+            super.setOrientation(VERTICAL)
+            super.setGravity(Gravity.CENTER)
+            val tx = TextView(context)
+            tx.gravity = Gravity.CENTER
+            tx.text = "\n${timeTableData.subjectInfo}\n${timeTableData.teacherInfo}\n${timeTableData.roomInfo}"
+            super.addView(tx)
+        }
+
+        init {
+            addView()
+        }
+    }
+
+    class TimeTableRow(context: Context, timeTableData: TimeTableData): TableRow(context) {
+        var timeIndex: TextView = TextView(context)
+        var timeInfo: TextView = TextView(context)
+        var subjectInfo: TextView = TextView(context)
+        var tInfo: TextView = TextView(context)
+        var elseInfo: TextView = TextView(context)
+        var roomInfo: TextView = TextView(context)
+
+        private fun addView() {
+            super.removeAllViews()
+            super.addView(timeIndex)
+            super.addView(timeInfo)
+            super.addView(subjectInfo)
+            super.addView(tInfo)
+            super.addView(roomInfo)
+            super.addView(elseInfo)
+        }
+
+        init {
+            timeIndex.text = timeTableData.timeidx
+            timeInfo.text = timeTableData.timeInfo
+            subjectInfo.text = timeTableData.subjectInfo
+            tInfo.text = timeTableData.teacherInfo
+            elseInfo.text = timeTableData.elseInfo
+            roomInfo.text = timeTableData.roomInfo
+            addView()
         }
     }
 }
