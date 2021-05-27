@@ -1,18 +1,20 @@
 package com.dayo.executer.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.view.*
-import androidx.fragment.app.Fragment
+import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat.startForegroundService
+import androidx.core.view.marginRight
+import androidx.fragment.app.Fragment
 import com.dayo.executer.*
 import com.dayo.executer.data.AblrData
 import com.dayo.executer.data.DataManager
-import com.dayo.executer.data.MealData
 import com.dayo.executer.data.TimeTableData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -37,7 +39,7 @@ class HomeFragment : Fragment() {
         val timeTable = view?.findViewById<TableLayout>(R.id.timeTable)
         val asckBtn = view?.findViewById<Button>(R.id.sckBtn)
         val applyAblrBtn = view?.findViewById<Button>(R.id.applyAblrBtn)
-        val mealTable = view?.findViewById<TableLayout>(R.id.mealTable)
+        val mealTableLinearLayout = view?.findViewById<LinearLayout>(R.id.hscvl)
 
         timeTable?.removeAllViews()
 
@@ -71,12 +73,18 @@ class HomeFragment : Fragment() {
             startForegroundService(activity as MainActivity, intent)
         }
 
-        mealTable?.removeAllViews()
+        mealTableLinearLayout?.removeAllViews()
         for(i in DataManager.mealData){
+            val mealTextView = TextView(this.activity)
+            var mealString = ""
             for(j in i){
-                mealTable?.addView(MealData.MealTableRow(activity as MainActivity, j))
+                mealString += j.menu + "\n"
             }
-            mealTable?.addView(TextRow.BlankTableRow(activity as MainActivity))
+            Log.d("meal",mealString)
+            mealTextView.text = mealString
+            mealTextView.gravity = Gravity.CENTER
+            mealTextView.setPadding(30,0,0,30)
+            mealTableLinearLayout?.addView(mealTextView)
         }
 
         initAblrTable()

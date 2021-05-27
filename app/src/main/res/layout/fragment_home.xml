@@ -25,18 +25,6 @@
                 android:text="자가진단 하러가기"
                 android:textSize="24sp" />
 
-            <TableLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/mealTable" />
-
-            <TableLayout
-                android:id="@+id/timeTable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </TableLayout>
-
             <Button
                 android:id="@+id/applyAblrBtn"
                 android:layout_width="match_parent"
@@ -48,6 +36,34 @@
 
             <TableLayout
                 android:id="@+id/ablrTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </TableLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="오늘의 급식"
+                android:textSize="18sp"
+                android:gravity="center">
+
+            </TextView>
+            <HorizontalScrollView
+                android:id="@+id/hscv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/hscvl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <TableLayout
+                android:id="@+id/timeTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
