@@ -1,15 +1,17 @@
 import android.content.Context
+import android.graphics.Color
 import android.widget.TableRow
 import android.widget.TextView
 
 class TextRow(context: Context, text: String): TableRow(context) {
-    val space = TextView(context)
+    val textView = TextView(context)
     private fun addView(){
         super.removeAllViews()
-        super.addView(space)
+        super.addView(textView)
     }
     init{
-        space.text = text
+        textView.text = text
+        textView.setTextColor(Color.BLACK)
         addView()
     }
     companion object {

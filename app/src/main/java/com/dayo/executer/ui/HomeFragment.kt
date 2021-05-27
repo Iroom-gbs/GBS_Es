@@ -75,10 +75,14 @@ class HomeFragment : Fragment() {
         }
 
         mealTableLinearLayout?.removeAllViews()
-        for(i in DataManager.mealData){
+
+        val mealIdxList = listOf("조식", "중식", "석식")
+        for(i in DataManager.mealData.indices){
             val mealTextView = TextView(this.activity)
-            var mealString = ""
-            for(j in i){
+            var mealString = "${mealIdxList[i]}\n"
+            if(DataManager.mealData[i].size == 0)
+                mealString += "데이터가 없습니다.\n"
+            for(j in DataManager.mealData[i]){
                 mealString += j.menu + "\n"
             }
             Log.d("meal",mealString)

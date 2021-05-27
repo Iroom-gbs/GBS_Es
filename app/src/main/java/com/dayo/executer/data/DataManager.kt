@@ -142,6 +142,7 @@ class DataManager {
             else {
                 mealData.add(mutableListOf())
                 for (x in mdt.split(' ')) {
+                    if(x=="석식") break
                     if (x == "*|") {
                         mealData.add(mutableListOf())
                         Log.d("asdf", mealData[idx].joinToString())
