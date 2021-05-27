@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat"
         android:directBootAware="true"
-        android:usesCleartextTraffic="true" >
+        android:networkSecurityConfig="@xml/network_security_config" >
         <service
             android:name=".FCMService"
             android:enabled="true"
