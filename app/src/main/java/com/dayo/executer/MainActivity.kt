@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import android.app.AlertDialog
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -15,9 +16,11 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.dayo.executer.data.DataManager
 import com.dayo.executer.ui.*
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.messaging.FirebaseMessaging
 
 //TODO: Convert AppCompatActivity to Activity
 class MainActivity : AppCompatActivity() {
@@ -31,6 +34,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if(!task.isSuccessful){
+                Toast.makeText(baseContext, "FCM token generation failed.", Toast.LENGTH_LONG).show()
+                return@OnCompleteListener
+            }
+
+            val token = task.result
+            Log.d("asdf", token.toString())
+            //Toast.makeText(baseContext, token, Toast.LENGTH_LONG).show()
+        })
 
         if(!DataManager.loadSettings()){
             Toast.makeText(this, "인터넷이 연결되어있지 않아 앱을 종료합니다.", Toast.LENGTH_LONG).show()

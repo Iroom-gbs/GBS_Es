@@ -56,6 +56,13 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="알림" >
+        <SwitchPreference
+            app:title="매시간 시간표 알림 수신하기"
+            app:key="timetable_always"
+            app:summary="매시간 시간표를 알림으로 알려줍니다." />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="일반">
         <Preference
             app:title="데이터 다시 로드"
@@ -64,6 +71,9 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Dev">
+        <SwitchPreference
+            app:title="Receive DEBUG FCM Data"
+            app:key="debugFCM" />
         <Preference
             app:title="Dayo" />
         <Preference />

@@ -36,6 +36,8 @@ class DataManager {
         var asckDs = 0L
         var asckUseAdvOpt = false
 
+        var alwaysReceiveTimeTableData = false
+
         var lowProtect = false
 
         var dayOfWeek = -1
@@ -43,6 +45,8 @@ class DataManager {
         var online = false
 
         var vifo = ""
+
+        var receiveDebugFCMData = false
 
         fun saveSettings() {
             sharedPref.edit {
@@ -58,6 +62,8 @@ class DataManager {
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("lowProtect", lowProtect)
                 putBoolean("noTempDataInHomeFragment", noTempDataInHomeFragment)
+                putBoolean("alwaysReceiveTimeTableData", alwaysReceiveTimeTableData)
+                putBoolean("receiveDebugFCMData", receiveDebugFCMData)
                 apply()
             }
         }
@@ -68,7 +74,7 @@ class DataManager {
 
             dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
             Log.d("asdf", dayOfWeek.toString())
-            var ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
+            val ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
             for (i in AblrData.stringToAblrData(ablrData))
                 todayAblrTableData.add(i)
             ablrID = sharedPref.getString("ablrID", "")!!
@@ -81,6 +87,8 @@ class DataManager {
             asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
             lowProtect = sharedPref.getBoolean("lowProtect", false)
             noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
+            alwaysReceiveTimeTableData = sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
+            receiveDebugFCMData = sharedPref.getBoolean("receiveDebugFCMData", false)
             tmpAblrData = mutableListOf()
             tmpAblrData.addAll(todayAblrTableData)
             return loadNetworkData()
