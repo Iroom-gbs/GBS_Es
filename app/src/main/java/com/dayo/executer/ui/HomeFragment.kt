@@ -35,6 +35,7 @@ class HomeFragment : Fragment() {
         m = (activity as MainActivity)
         nav = m.findViewById(R.id.nav_view)
 
+        m.findViewById<FloatingActionButton>(R.id.addAblrDataFab)!!.visibility = View.VISIBLE
         val sv = view?.findViewById<ScrollView>(R.id.scv)
         val timeTable = view?.findViewById<TableLayout>(R.id.timeTable)
         val asckBtn = view?.findViewById<Button>(R.id.sckBtn)
@@ -131,5 +132,11 @@ class HomeFragment : Fragment() {
         super.onStart()
 
         initUI()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        (activity as MainActivity).findViewById<FloatingActionButton>(R.id.addAblrDataFab)?.visibility = View.GONE
     }
 }

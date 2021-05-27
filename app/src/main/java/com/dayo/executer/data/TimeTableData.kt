@@ -6,7 +6,9 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.transition.Slide
+import com.dayo.executer.R
 
 data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectInfo: String, val teacherInfo: String, val roomInfo: String, val elseInfo: String) {
     companion object {
@@ -48,11 +50,12 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
 
         fun addView() {
             super.removeAllViews()
+            super.setBackground(ResourcesCompat.getDrawable(resources, R.drawable.border, resources.newTheme()))
             super.setOrientation(VERTICAL)
             super.setGravity(Gravity.CENTER)
             val tx = TextView(context)
             tx.gravity = Gravity.CENTER
-            tx.text = "\n${timeTableData.subjectInfo}\n${timeTableData.teacherInfo}\n${timeTableData.roomInfo}"
+            tx.text = "\n${timeTableData.subjectInfo}\n${timeTableData.teacherInfo}\n${timeTableData.roomInfo}\n"
             super.addView(tx)
         }
 
