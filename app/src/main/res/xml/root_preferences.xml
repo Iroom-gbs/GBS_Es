@@ -74,8 +74,9 @@
         <SwitchPreference
             app:title="Receive DEBUG FCM Data"
             app:key="debugFCM" />
-        <Preference
-            app:title="Dayo" />
+        <Preference app:title="Dayo" />
+        <Preference app:title="Kiroo" />
+        <Preference app:title="Sun" />
         <Preference />
     </PreferenceCategory>
 </PreferenceScreen>
