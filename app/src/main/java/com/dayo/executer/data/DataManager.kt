@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
+import java.io.EOFException
 import java.util.*
 
 
@@ -95,28 +96,37 @@ class DataManager {
         }
 
         private fun loadNetworkData(): Boolean {
-            if(!online) return false
+            if (!online) return false
             CoroutineScope(Dispatchers.Default).launch {
-                val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
-                    .ignoreContentType(true).get()
-                vifo = doc.body().text() //ablr asck ex
-                vifo = vifo.substring(1, vifo.length - 1)
+                while(true) {
+                    try {
+                        val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
+                            .ignoreContentType(true).get()
+                        vifo = doc.body().text() //ablr asck ex
+                        vifo = vifo.substring(1, vifo.length - 1)
+                        break
+                    } catch (e: EOFException) { }
+                }
             }
             var tableData = ""
             CoroutineScope(Dispatchers.Default).launch {
-                val doc =
-                    Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
-                        .ignoreContentType(true).get()
-                tableData = doc.body().text()
+                while(true) {
+                    try {
+                        val doc =
+                            Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
+                                .ignoreContentType(true).get()
+                        tableData = doc.body().text()
+                        break
+                    } catch (e: EOFException) { }
+                }
             }
             while (tableData == "")
                 Thread.sleep(100)
             tableData = tableData.substring(1, tableData.length - 1)
             Log.d("asdf", tableData)
-            if(tableData == "not parsed yet"){
+            if (tableData == "not parsed yet") {
                 timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-            }
-            else {
+            } else {
                 weeklyTimeTableData = TimeTableData.stringToTimeTableData(tableData)
                 timeTableData = weeklyTimeTableData[dayOfWeek - 1]
                 if (timeTableData.size == 0)
@@ -124,25 +134,28 @@ class DataManager {
             }
             var mdt = ""
             CoroutineScope(Dispatchers.Default).launch {
-                val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
-                    .ignoreContentType(true).get()
-                mdt = doc.body().text()
-                Log.d("asdf", mdt)
+                while(true) {
+                    try {
+                        val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
+                            .ignoreContentType(true).get()
+                        mdt = doc.body().text()
+                        Log.d("asdf", mdt)
+                        break
+                    } catch (e: EOFException) { }
+                }
             }
-            while(mdt == "")
+            while (mdt == "")
                 Thread.sleep(100)
             mdt = mdt.substring(1, mdt.length - 1)
             var idx = 0
-            if(mdt == "Not parsed yet"){
+            if (mdt == "Not parsed yet") {
                 mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
-            }
-            else if(mdt == "*| *| *| "){
+            } else if (mdt == "*| *| *| ") {
                 mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
-            }
-            else {
+            } else {
                 mealData.add(mutableListOf())
                 for (x in mdt.split(' ')) {
-                    if(x=="석식") break
+                    if (x == "석식") break
                     if (x == "*|") {
                         mealData.add(mutableListOf())
                         Log.d("asdf", mealData[idx].joinToString())
