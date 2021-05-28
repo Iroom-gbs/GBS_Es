@@ -76,7 +76,7 @@
             app:key="debugFCM" />
         <Preference app:title="Dayo" />
         <Preference app:title="Kiroo" />
-        <Preference app:title="Sun" />
+        <Preference app:title="Hegel" />
         <Preference />
     </PreferenceCategory>
 </PreferenceScreen>
