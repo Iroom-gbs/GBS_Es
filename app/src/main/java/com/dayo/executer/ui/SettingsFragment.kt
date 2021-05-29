@@ -6,6 +6,7 @@ import android.text.InputFilter
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
+import android.widget.Switch
 import androidx.preference.*
 import com.dayo.executer.FCMService
 import com.dayo.executer.R
@@ -28,6 +29,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val saveHomeEditedData = findPreference<SwitchPreference>("saveHomeFragmentEditedData")!!
 
         val asckPWPreference = findPreference<EditTextPreference>("asckPW")!!
+        val asckAlertPreference = findPreference<SwitchPreference>("asckAlert")!!
         val asckUseAdvOptPreference = findPreference<SwitchPreference>("asckAdv")!!
         val asckDtPreference = findPreference<EditTextPreference>("dt")!!
         val asckDselPreference = findPreference<EditTextPreference>("dsel")!!
@@ -48,6 +50,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         saveHomeEditedData.isChecked = DataManager.noTempDataInHomeFragment
 
         asckPWPreference.text = DataManager.asckPW
+        asckAlertPreference.isChecked = DataManager.alwaysReceiveAsckAlert
         asckUseAdvOptPreference.isChecked = DataManager.asckUseAdvOpt
         asckDtPreference.text = DataManager.asckDt.toString()
         asckDselPreference.text = DataManager.asckDsel.toString()
@@ -97,6 +100,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val fArray = arrayOfNulls<InputFilter>(1)
             fArray[0] = InputFilter.LengthFilter(4)
             it.filters = fArray
+        }
+
+        asckAlertPreference.setOnPreferenceChangeListener { _, newValue ->
+            DataManager.alwaysReceiveAsckAlert = newValue as Boolean
+            if(newValue)
+                FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ASCK_ALERT)
+            else FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ASCK_ALERT)
+            true
         }
 
         asckUseAdvOptPreference.setOnPreferenceChangeListener { _, newValue ->

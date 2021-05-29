@@ -32,6 +32,12 @@
             app:summary="자가진단할때 사용하는 비밀번호를 입력하세요." />
 
         <SwitchPreference
+            app:title="매일 아침 자가진단 알림받기"
+            app:key="asckAlert"
+            app:summaryOn="매일 아침 자가진단 알림을 받습니다."
+            app:summaryOff="매일 아침 자가진단 알림을 받지 않습니다." />
+
+        <SwitchPreference
             app:title="Use advanced options"
             app:defaultValue="false"
             app:key="asckAdv" />
@@ -56,7 +62,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="알림" >
+    <PreferenceCategory app:title="시간표" >
         <SwitchPreference
             app:title="매시간 시간표 알림 수신하기"
             app:key="timetable_always"

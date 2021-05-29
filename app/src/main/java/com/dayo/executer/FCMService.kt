@@ -19,6 +19,8 @@ class FCMService : FirebaseMessagingService() {
     companion object {
         var ALWAYS_RECEVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
         val DEBUG = "DEBUG"
+        val ASCK_ALERT = "TOKEN_ASCK"
+
         fun reinitToken() {
             ALWAYS_RECEVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
         }
@@ -26,6 +28,7 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(msg: RemoteMessage) {
         super.onMessageReceived(msg)
+        Log.d("FCM", msg.notification?.body.toString())
         CoroutineScope(Dispatchers.Main).launch {
             Toast.makeText(App.appContext, msg.notification?.body.toString(), Toast.LENGTH_LONG)
                 .show()
@@ -39,5 +42,7 @@ class FCMService : FirebaseMessagingService() {
             FirebaseMessaging.getInstance().subscribeToTopic(ALWAYS_RECEVE_TIMETABLE_DATA)
         if(DataManager.receiveDebugFCMData)
             FirebaseMessaging.getInstance().subscribeToTopic(DEBUG)
+        if(DataManager.alwaysReceiveAsckAlert)
+            FirebaseMessaging.getInstance().subscribeToTopic(ASCK_ALERT)
     }
 }

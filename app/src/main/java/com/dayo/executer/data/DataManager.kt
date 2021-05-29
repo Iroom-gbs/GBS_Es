@@ -36,6 +36,7 @@ class DataManager {
         var asckDsel = 0L
         var asckDs = 0L
         var asckUseAdvOpt = false
+        var alwaysReceiveAsckAlert = false
 
         var alwaysReceiveTimeTableData = false
 
@@ -61,6 +62,7 @@ class DataManager {
                 putLong("asckDsel", asckDsel)
                 putLong("asckDs", asckDs)
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
+                putBoolean("alwaysReceiveAsckAlert", alwaysReceiveAsckAlert)
                 putBoolean("lowProtect", lowProtect)
                 putBoolean("noTempDataInHomeFragment", noTempDataInHomeFragment)
                 putBoolean("alwaysReceiveTimeTableData", alwaysReceiveTimeTableData)
@@ -86,6 +88,7 @@ class DataManager {
             asckDsel = sharedPref.getLong("asckDsel", 1500L)
             asckDs = sharedPref.getLong("asckDs", 1000L)
             asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
+            alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
             lowProtect = sharedPref.getBoolean("lowProtect", false)
             noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
             alwaysReceiveTimeTableData = sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
