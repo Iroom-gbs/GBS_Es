@@ -4,7 +4,7 @@ GBS Essential project
 
 ## Info
  - 이 프로젝트는 경기북과학고 17기 학생들이 더욱 더 smart한 북곽을 만들기 위하여 시작한 프로젝트입니다.
- - 현재 [Play store][PlayStore]최신 버전 다운로드가 가능합니다.
+ - 현재 [Play store][PlayStore]에서 최신 버전 다운로드가 가능합니다.
  - iOS 지원 계획은 없습니다.
  
 
