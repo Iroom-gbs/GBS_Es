@@ -1,5 +1,6 @@
-현재 개발중인 버전입니다.
-==========================
+GBS Essential project
+=========================
+이 프로젝트는 과학융합의날 행사에서 시작된 프로젝트로 PR을 넣는경우 대회에 사용에 동의하는것으로 간주됩니다.
 
 ## Feature development info
 ### 완료
@@ -13,7 +14,7 @@
  - Crawl meal data in https://gbs.hs.kr
  - settingsFragment has been created
 
-### 진행 예정
+### 진행 예정 / 진행중
 
  - Server side program develop
  - UI/UX
