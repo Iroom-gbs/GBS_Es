@@ -86,6 +86,7 @@ class HomeFragment : Fragment() {
         else {
             val mealIdxList = listOf("조식", "중식", "석식")
             for (i in DataManager.mealData.indices) {
+                if(i == 3) break
                 val mealTextView = TextView(this.activity)
                 var mealString = "${mealIdxList[i]}\n"
                 if (DataManager.mealData[i].size == 0)
