@@ -23,7 +23,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 
-
 class AblrService : Service() {
 
     companion object {
@@ -76,7 +75,7 @@ class AblrService : Service() {
         val cookieManager = CookieManager.getInstance()
         cookieManager.removeAllCookies { }
         cookieManager.flush()
-        webView.addJavascriptInterface(JSI(this), "jsi")
+        //webView.addJavascriptInterface(JSI(this), "jsi")
         webView.settings.domStorageEnabled = true
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -99,7 +98,8 @@ class AblrService : Service() {
                         view.loadUrl("http://isds.kr/sdm/source/SSH/sh_approve_manage.php")
                     "http://isds.kr/sdm/source/SSH/sh_approve_manage.php" -> {
                         reExec = false
-                        view.loadUrl("javascript:window.jsi.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+                        //view.loadUrl("javascript:window.jsi.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+                        getHTML(view)
                         CoroutineScope(Dispatchers.Default).launch {
                             while (res == "") {
                                 Thread.sleep(1)
@@ -108,7 +108,8 @@ class AblrService : Service() {
                             var ele = doc.getElementsByTag("tr")
                             while (ele.size < 1) {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    view.loadUrl("javascript:window.jsi.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+                                    //view.loadUrl("javascript:window.jsi.getHtml(document.getElementsByTagName('html')[0].innerHTML);");
+                                    getHTML(view)
                                     doc = Jsoup.parse(res)
                                     ele = doc.getElementsByTag("tr")
                                 }
@@ -117,15 +118,19 @@ class AblrService : Service() {
                             val usqLst = mutableListOf<String>()
                             val rLst = mutableListOf<String>()
                             for (x in ele) {
-                                usqLst.add(x.attr("data-user_seq"))
-                                rLst.add(x.attr("data-r_seq"))
+                                Log.d("ele", x.attr("data-user_seq"))
+                                Log.d("ele", "r: ${x.attr("data-r_seq")}")
+                                usqLst.add(x.attr("data-user_seq").replace("\\", ""))
+                                rLst.add(x.attr("data-r_seq").replace("\\", ""))
                             }
                             for (x in usqLst.indices) {
                                 CoroutineScope(Dispatchers.Main).launch {
                                     view.loadUrl(
                                         "javascript:(function () { \$(\"#h_dormitory_code\").val(\"gbs\");\$(\"#h_user_id\").val(\"${DataManager.ablrID}\");" +
-                                                "\$(\"#h_user_seq\").val(\"${usqLst[x]}\");\$(\"#h_r_seq\").val(\"${rLst[x]}\");loadDetailData();loadTableData2();})()"
+                                                "\$(\"#h_user_seq\").val(${usqLst[x]});\$(\"#h_r_seq\").val(${rLst[x]});loadDetailData();loadTableData2();})()"
                                     )
+                                    Log.d("js", "javascript:(function () { \$(\"#h_dormitory_code\").val(\"gbs\");\$(\"#h_user_id\").val(\"${DataManager.ablrID}\");" +
+                                            "\$(\"#h_user_seq\").val(${usqLst[x]});\$(\"#h_r_seq\").val(${rLst[x]});loadDetailData();loadTableData2();})()")
                                 }
                                 deleteResult = 0
                                 Thread.sleep(100)
@@ -269,6 +274,15 @@ class AblrService : Service() {
         return START_STICKY
     }
 
+    fun getHTML(view: WebView){
+        //res = ""
+        view.evaluateJavascript( "(function() { return (document.getElementsByTagName('html')[0].innerHTML); })();") {
+            res = it.replace("\\u003C", "<")
+            Log.d("asdf", res)
+        }
+        Thread.sleep(100)
+    }
+
     class BackgroundWebView : WebView {
         constructor(context: Context?) : super(context!!)
         constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs)
@@ -280,14 +294,6 @@ class AblrService : Service() {
 
         override fun onWindowVisibilityChanged(visibility: Int) {
             if (visibility != View.GONE) super.onWindowVisibilityChanged(View.VISIBLE)
-        }
-    }
-
-    class JSI(private val mContext: Context) {
-        @JavascriptInterface
-        public fun getHtml(html: String)
-        {
-            res = html
         }
     }
 }
