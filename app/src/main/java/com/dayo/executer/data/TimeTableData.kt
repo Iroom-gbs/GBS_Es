@@ -10,7 +10,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.transition.Slide
 import com.dayo.executer.R
 
-data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectInfo: String, val teacherInfo: String, val roomInfo: String, val elseInfo: String) {
+data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectInfo: String, val teacherInfo: String, val roomInfo: String, val elseInfo: String, val changed: Boolean = false) {
     companion object {
         fun stringToTimeTableData(s: String): MutableList<MutableList<TimeTableData>> {
             Log.d("asdf", s)
@@ -20,7 +20,7 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
             var idx = 1
             for(i in psdat.split('`')){
                 rtn.add(mutableListOf())
-                if(i.length < 2){
+                if(i.length < 2) {
                     idx++
                     continue
                 }
@@ -28,7 +28,7 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
                     if (time.length < 2) break
 
                     val dat = time.split('|')
-                    if (dat.size < 5) break
+                    if (dat.size < 6) break
                     rtn[idx].add(
                         TimeTableData(
                             timeidx = dat[0],
@@ -36,7 +36,11 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
                             subjectInfo = dat[2],
                             teacherInfo = dat[3],
                             roomInfo = dat[4],
-                            elseInfo = dat[5]
+                            elseInfo = dat[5],
+                            changed = when(dat[6]){
+                                "1" -> true
+                                else -> false
+                            }
                         )
                     )
                 }
@@ -102,6 +106,5 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
  * teacherInfo: name of teacher
  * roomInfo: location
  * elseInfo: other info(exam, homework, etc.)
- *
- * 9:10~10:00 영어 서원화 어학실2 암것도_없음
+ * changed: true in timetable changed in that time
  */

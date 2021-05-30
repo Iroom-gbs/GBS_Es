@@ -90,11 +90,9 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_map -> {
                 val drawer: SlidingUpPanelLayout = findViewById(R.id.main_panel)
                 if(drawer.panelState != SlidingUpPanelLayout.PanelState.DRAGGING)
-                drawer.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED)
-                true
+                    drawer.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
             }
         }
-        false
     }
 
     private val mnavviewitemselectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item->

@@ -76,20 +76,29 @@ class HomeFragment : Fragment() {
 
         mealTableLinearLayout?.removeAllViews()
 
-        val mealIdxList = listOf("조식", "중식", "석식")
-        for(i in DataManager.mealData.indices){
-            val mealTextView = TextView(this.activity)
-            var mealString = "${mealIdxList[i]}\n"
-            if(DataManager.mealData[i].size == 0)
-                mealString += "데이터가 없습니다.\n"
-            for(j in DataManager.mealData[i]){
-                mealString += j.menu + "\n"
+        if(DataManager.mealData.size == 0) {
+            val noDataTextView = TextView(activity)
+            noDataTextView.text = "데이터가 없습니다.\n"
+            noDataTextView.gravity = Gravity.CENTER
+            noDataTextView.setPadding(30, 0, 0, 30)
+            mealTableLinearLayout?.addView(noDataTextView)
+        }
+        else {
+            val mealIdxList = listOf("조식", "중식", "석식")
+            for (i in DataManager.mealData.indices) {
+                val mealTextView = TextView(this.activity)
+                var mealString = "${mealIdxList[i]}\n"
+                if (DataManager.mealData[i].size == 0)
+                    mealString += "데이터가 없습니다.\n"
+                for (j in DataManager.mealData[i]) {
+                    mealString += j.menu + "\n"
+                }
+                Log.d("meal", mealString)
+                mealTextView.text = mealString
+                mealTextView.gravity = Gravity.CENTER
+                mealTextView.setPadding(30, 0, 0, 30)
+                mealTableLinearLayout?.addView(mealTextView)
             }
-            Log.d("meal",mealString)
-            mealTextView.text = mealString
-            mealTextView.gravity = Gravity.CENTER
-            mealTextView.setPadding(30,0,0,30)
-            mealTableLinearLayout?.addView(mealTextView)
         }
 
         initAblrTable()
