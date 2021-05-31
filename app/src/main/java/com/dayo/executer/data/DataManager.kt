@@ -39,6 +39,7 @@ class DataManager {
         var alwaysReceiveAsckAlert = false
 
         var alwaysReceiveTimeTableData = false
+        var receiveSwdTimeTableData = false
 
         var lowProtect = false
 
@@ -66,6 +67,7 @@ class DataManager {
                 putBoolean("lowProtect", lowProtect)
                 putBoolean("noTempDataInHomeFragment", noTempDataInHomeFragment)
                 putBoolean("alwaysReceiveTimeTableData", alwaysReceiveTimeTableData)
+                putBoolean("receiveSwdTimeTableData", receiveSwdTimeTableData)
                 putBoolean("receiveDebugFCMData", receiveDebugFCMData)
                 apply()
             }
@@ -92,6 +94,7 @@ class DataManager {
             lowProtect = sharedPref.getBoolean("lowProtect", false)
             noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
             alwaysReceiveTimeTableData = sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
+            receiveSwdTimeTableData = sharedPref.getBoolean("receiveSwdTimeTableData", false)
             receiveDebugFCMData = sharedPref.getBoolean("receiveDebugFCMData", false)
             tmpAblrData = mutableListOf()
             tmpAblrData.addAll(todayAblrTableData)

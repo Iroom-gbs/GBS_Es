@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Switch
@@ -37,6 +38,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val reloadDataPreference = findPreference<Preference>("reloadData")!!
 
+        val receiveSwdTimeTableAlert = findPreference<SwitchPreference>("timetable_swd")!!
         val alwaysReceveTimeTableAlert = findPreference<SwitchPreference>("timetable_always")!!
 
         val receiveDebugFCMPreference = findPreference<SwitchPreference>("debugFCM")!!
@@ -56,6 +58,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         asckDselPreference.text = DataManager.asckDsel.toString()
         asckDsPreference.text = DataManager.asckDs.toString()
 
+        receiveSwdTimeTableAlert.isChecked = DataManager.receiveSwdTimeTableData
         alwaysReceveTimeTableAlert.isChecked = DataManager.alwaysReceiveTimeTableData
 
         receiveDebugFCMPreference.isChecked = DataManager.receiveDebugFCMData
@@ -63,11 +66,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         classPreferences.setOnPreferenceChangeListener { _, newValue ->
             if(DataManager.alwaysReceiveTimeTableData)
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEIVE_TIMETABLE_DATA)
+            if(DataManager.receiveSwdTimeTableData)
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.SWD_RECEIVE_TIMETABLE_DATA)
             DataManager.classInfo = newValue.toString()
             FCMService.reinitToken()
             if(DataManager.alwaysReceiveTimeTableData)
-                FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
+                FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ALWAYS_RECEIVE_TIMETABLE_DATA)
+            if(DataManager.receiveSwdTimeTableData)
+                FirebaseMessaging.getInstance().subscribeToTopic(FCMService.SWD_RECEIVE_TIMETABLE_DATA)
             DataManager.saveSettings()
             DataManager.loadSettings()
             true
@@ -158,8 +165,25 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         alwaysReceveTimeTableAlert.setOnPreferenceChangeListener { _, newValue ->
             DataManager.alwaysReceiveTimeTableData = newValue as Boolean
-            if(newValue) FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
-            else FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEVE_TIMETABLE_DATA)
+            Log.d("asdf", "asdf")
+            if(newValue) FirebaseMessaging.getInstance().subscribeToTopic(FCMService.ALWAYS_RECEIVE_TIMETABLE_DATA)
+            else FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEIVE_TIMETABLE_DATA)
+            true
+        }
+
+        receiveSwdTimeTableAlert.setOnPreferenceChangeListener { _, newValue ->
+            DataManager.receiveSwdTimeTableData = newValue as Boolean
+            if(newValue) FirebaseMessaging.getInstance().subscribeToTopic(FCMService.SWD_RECEIVE_TIMETABLE_DATA)
+            else {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.SWD_RECEIVE_TIMETABLE_DATA)
+                alwaysReceveTimeTableAlert.isChecked = false
+                if(DataManager.alwaysReceiveTimeTableData){
+                    DataManager.alwaysReceiveTimeTableData = false
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(FCMService.ALWAYS_RECEIVE_TIMETABLE_DATA)
+                }
+            }
+            DataManager.saveSettings()
+            DataManager.loadSettings()
             true
         }
 

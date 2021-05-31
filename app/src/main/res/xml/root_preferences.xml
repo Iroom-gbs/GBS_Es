@@ -64,9 +64,15 @@
 
     <PreferenceCategory app:title="시간표" >
         <SwitchPreference
+            app:title="변경된 시간표 알림 수신하기"
+            app:key="timetable_swd"
+            app:summary="변경된 시간표를 알림으로 알려줍니다." />
+
+        <SwitchPreference
             app:title="매시간 시간표 알림 수신하기"
             app:key="timetable_always"
-            app:summary="매시간 시간표를 알림으로 알려줍니다." />
+            app:dependency="timetable_swd"
+            app:summary="매시간 시간표를 알림으로 알려줍니다.\n이 기능을 사용하기 위해선 변경된 시간표 알림을 받아야합니다." />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="일반">

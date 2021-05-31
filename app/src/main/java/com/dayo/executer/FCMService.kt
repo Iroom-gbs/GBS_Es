@@ -11,18 +11,21 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.firebase.messaging.directboot.FirebaseMessagingDirectBootReceiver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FCMService : FirebaseMessagingService() {
     companion object {
-        var ALWAYS_RECEVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
-        val DEBUG = "DEBUG"
-        val ASCK_ALERT = "TOKEN_ASCK"
+        var ALWAYS_RECEIVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
+        var SWD_RECEIVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_SWD_TIMETABLE"
+        const val DEBUG = "DEBUG"
+        const val ASCK_ALERT = "TOKEN_ASCK"
 
         fun reinitToken() {
-            ALWAYS_RECEVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
+            ALWAYS_RECEIVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_ALWAYS_TIMETABLE"
+            SWD_RECEIVE_TIMETABLE_DATA = "${DataManager.classInfo}TOKEN_SWD_TIMETABLE"
         }
     }
 
@@ -39,7 +42,9 @@ class FCMService : FirebaseMessagingService() {
         super.onNewToken(token)
 
         if(DataManager.alwaysReceiveTimeTableData)
-            FirebaseMessaging.getInstance().subscribeToTopic(ALWAYS_RECEVE_TIMETABLE_DATA)
+            FirebaseMessaging.getInstance().subscribeToTopic(ALWAYS_RECEIVE_TIMETABLE_DATA)
+        if(DataManager.receiveSwdTimeTableData)
+            FirebaseMessaging.getInstance().subscribeToTopic(SWD_RECEIVE_TIMETABLE_DATA)
         if(DataManager.receiveDebugFCMData)
             FirebaseMessaging.getInstance().subscribeToTopic(DEBUG)
         if(DataManager.alwaysReceiveAsckAlert)
