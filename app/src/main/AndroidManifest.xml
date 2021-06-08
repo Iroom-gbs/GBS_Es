@@ -13,19 +13,29 @@
     <application
         android:name=".App"
         android:allowBackup="true"
+        android:directBootAware="true"
         android:icon="@mipmap/ic_launcher"
         android:label="GBS Essential"
         android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat"
-        android:directBootAware="true"
-        android:networkSecurityConfig="@xml/network_security_config" >
+        android:theme="@style/Theme.AppCompat">
+        
+        <activity android:name=".BootstrapActivity"
+            android:label="GBS Essential" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".FCMService"
+            android:directBootAware="true"
             android:enabled="true"
-            android:exported="false"
-            android:directBootAware="true" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -42,15 +52,7 @@
         <activity android:name=".AsckActivity" />
         <activity
             android:name=".MainActivity"
-            android:label="GBS Essential"
-            android:launchMode="singleInstance"
-            android:theme="@style/Theme.AppCompat">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:launchMode="singleInstance" />
     </application>
 
 </manifest>
