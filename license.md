@@ -22,6 +22,8 @@
   
  - 앱의 관련된 문의나, 오류 제보는 Play Store review나 Discord Dayo#3334로 DM부탁드립니다.
 
+ - 이 앱은 오류 분석을 위해 Google Analytics를 사용합니다.
+
 ## For Developer(Contributer)
 
  - 이 프로젝트는 오픈소스로 진행됩니다.
