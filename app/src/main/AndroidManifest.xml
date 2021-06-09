@@ -23,7 +23,9 @@
         android:theme="@style/Theme.AppCompat">
         
         <activity android:name=".BootstrapActivity"
-            android:label="GBS Essential" >
+            android:label="GBS Essential"
+            android:launchMode="singleInstance"
+            android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

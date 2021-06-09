@@ -45,22 +45,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("asdf", token.toString())
             //Toast.makeText(baseContext, token, Toast.LENGTH_LONG).show()
         })
-/*
-        if(!DataManager.loadSettings()){
-            Toast.makeText(this, "인터넷이 연결되어있지 않아 앱을 종료합니다.", Toast.LENGTH_LONG).show()
-            finishAndRemoveTask()
-            //TODO: Why this alert dialog creation is not working
-            AlertDialog.Builder(this)
-                .setTitle("안내")
-                .setMessage("이 앱을 사용하기 위해선 인터넷 연결이 필요합니다.")
-                //.setCancelable(false)
-                .setPositiveButton("OK"){ _, _ ->
-                    finishAndRemoveTask()
-                }
-                .show()
-        }
 
- */
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
         val navController = findNavController(R.id.nav_host_fragment)
@@ -75,10 +60,10 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
-        navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
-        //navView.setupWithNavController(navController)
+        //setupActionBarWithNavController(navController, appBarConfiguration)
+        //navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
+        //navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
+        navView.setupWithNavController(navController)
 
         Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
 

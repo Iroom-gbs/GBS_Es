@@ -3,6 +3,7 @@ package com.dayo.executer
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import com.dayo.executer.data.DataManager
@@ -45,17 +46,18 @@ class BootstrapActivity : AppCompatActivity() {
                     delay(100)
                 }
                 delay(500)
-                if(tick != 50)
-                    tryInit()
-
+                if(tick != 50 && tryInit())
+                    break
             }
         }
     }
 
-    private fun tryInit() {
-        if(DataManager.online && DataManager.loadSettings()){
+    private fun tryInit(): Boolean {
+        return if(DataManager.online && DataManager.loadSettings()){
             startActivity(Intent(this@BootstrapActivity, MainActivity::class.java))
+            Log.e("asdf", "asdf")
             finish()
-        }
+            true
+        } else false
     }
 }
