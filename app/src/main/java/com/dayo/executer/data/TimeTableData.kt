@@ -3,6 +3,7 @@ package com.dayo.executer.data
 import android.content.Context
 import android.util.Log
 import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -50,15 +51,16 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
         }
     }
 
-    class SimpleTimeTableRow(context: Context, val timeTableData: TimeTableData): TableRow(context) {
+    class SimpleTimeTableRow(context: Context, private val timeTableData: TimeTableData): LinearLayout(context) {
 
-        fun addView() {
+        private fun addView() {
             super.removeAllViews()
             super.setBackground(ResourcesCompat.getDrawable(resources, R.drawable.border, resources.newTheme()))
             super.setOrientation(VERTICAL)
             super.setGravity(Gravity.CENTER)
             val tx = TextView(context)
             tx.gravity = Gravity.CENTER
+            tx.textSize = 12f
             tx.text = "\n${timeTableData.subjectInfo}\n${timeTableData.teacherInfo}\n${timeTableData.roomInfo}\n"
             super.addView(tx)
         }

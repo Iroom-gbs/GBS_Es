@@ -20,10 +20,6 @@ import java.lang.IndexOutOfBoundsException
 
 class WeeklyFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,7 +28,9 @@ class WeeklyFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_weekly, container, false)
     }
 
-    fun initUI(){
+    override fun onStart(){
+        super.onStart()
+
         val weeklyTimeTable = view?.findViewById<TableLayout>(R.id.weeklyTimeTable)
         weeklyTimeTable?.removeAllViews()
         val rowx = TableRow(activity)
@@ -54,21 +52,13 @@ class WeeklyFragment : Fragment() {
                             DataManager.weeklyTimeTableData[j][i]
                         )
                     )
-                    Log.d("asdf", "$i $j")
-                    Log.d("asdf",
-                        DataManager.weeklyTimeTableData[j][i].toString())
                 }
                 catch(ei: IndexOutOfBoundsException){
+                    Log.d("asdf", "$j $i")
                     row.addView(TextRow.BlankTableRow(requireContext()))
                 }
             }
             weeklyTimeTable?.addView(row)
         }
-    }
-
-    override fun onStart(){
-        super.onStart()
-
-        initUI()
     }
 }

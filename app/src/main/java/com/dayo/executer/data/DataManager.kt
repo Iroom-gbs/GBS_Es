@@ -128,6 +128,7 @@ class DataManager {
             }
             while (tableData == "")
                 Thread.sleep(100)
+            tableData = tableData.replace("null", "")
             tableData = tableData.substring(1, tableData.length - 1)
             Log.d("asdf", tableData)
             if (tableData == "not parsed yet") {
@@ -152,6 +153,7 @@ class DataManager {
             }
             while (mdt == "")
                 Thread.sleep(100)
+            mdt = mdt.replace("null", "")
             mdt = mdt.substring(1, mdt.length - 1)
             var idx = 0
             if (mdt == "Not parsed yet") {
