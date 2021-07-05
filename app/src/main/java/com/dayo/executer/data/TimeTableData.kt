@@ -51,18 +51,17 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
         }
     }
 
-    class SimpleTimeTableRow(context: Context, private val timeTableData: TimeTableData): LinearLayout(context) {
+    class SimpleTimeTableRow(context: Context, private val timeTableData: TimeTableData): TableRow(context) {
 
         private fun addView() {
-            super.removeAllViews()
             super.setBackground(ResourcesCompat.getDrawable(resources, R.drawable.border, resources.newTheme()))
-            super.setOrientation(VERTICAL)
+            super.setGravity(Gravity.CENTER)
             super.setGravity(Gravity.CENTER)
             val tx = TextView(context)
             tx.gravity = Gravity.CENTER
             tx.textSize = 12f
             if(timeTableData.changed)
-                super.setBackgroundColor(0xFFFF00)
+                tx.setBackgroundColor(0xFFFF00)
             tx.text = "\n${timeTableData.subjectInfo}\n${timeTableData.teacherInfo}\n${timeTableData.roomInfo}\n"
             super.addView(tx)
         }

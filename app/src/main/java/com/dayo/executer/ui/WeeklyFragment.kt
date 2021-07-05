@@ -45,12 +45,6 @@ class WeeklyFragment : Fragment() {
         weeklyTimeTable?.addView(rowx)
         for(i in 0..8){
             val row = TableRow(activity)
-            row.removeAllViews()
-            val tr = TextView(requireActivity().baseContext)
-            tr.background = ResourcesCompat.getDrawable(resources, R.drawable.border, resources.newTheme())
-            tr.text = (i+1).toString()
-            tr.gravity = Gravity.CENTER
-            //row.addView(tr)
             for(j in 0..5) {
                 try {
                     row.addView(
