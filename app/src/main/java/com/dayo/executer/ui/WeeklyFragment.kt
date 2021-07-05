@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
+import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.dayo.executer.R
 import com.dayo.executer.data.DataManager
@@ -44,6 +45,12 @@ class WeeklyFragment : Fragment() {
         weeklyTimeTable?.addView(rowx)
         for(i in 0..8){
             val row = TableRow(activity)
+            row.removeAllViews()
+            val tr = TextView(requireActivity().baseContext)
+            tr.background = ResourcesCompat.getDrawable(resources, R.drawable.border, resources.newTheme())
+            tr.text = (i+1).toString()
+            tr.gravity = Gravity.CENTER
+            //row.addView(tr)
             for(j in 0..5) {
                 try {
                     row.addView(

@@ -61,6 +61,8 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
             val tx = TextView(context)
             tx.gravity = Gravity.CENTER
             tx.textSize = 12f
+            if(timeTableData.changed)
+                super.setBackgroundColor(0xFFFF00)
             tx.text = "\n${timeTableData.subjectInfo}\n${timeTableData.teacherInfo}\n${timeTableData.roomInfo}\n"
             super.addView(tx)
         }

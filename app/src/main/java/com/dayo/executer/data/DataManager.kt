@@ -65,7 +65,7 @@ class DataManager {
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("alwaysReceiveAsckAlert", alwaysReceiveAsckAlert)
                 putBoolean("lowProtect", lowProtect)
-                putBoolean("noTempDataInHomeFragment", noTempDataInHomeFragment)
+                putBoolean ("noTempDataInHomeFragment", noTempDataInHomeFragment)
                 putBoolean("alwaysReceiveTimeTableData", alwaysReceiveTimeTableData)
                 putBoolean("receiveSwdTimeTableData", receiveSwdTimeTableData)
                 putBoolean("receiveDebugFCMData", receiveDebugFCMData)
@@ -129,7 +129,7 @@ class DataManager {
             while (tableData == "")
                 Thread.sleep(100)
             tableData = tableData.replace("null", "")
-            tableData = tableData.substring(1, tableData.length - 1)
+            //tableData = tableData.substring(1, tableData.length - 1)
             Log.d("asdf", tableData)
             if (tableData == "not parsed yet") {
                 timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
@@ -154,9 +154,9 @@ class DataManager {
             while (mdt == "")
                 Thread.sleep(100)
             mdt = mdt.replace("null", "")
-            mdt = mdt.substring(1, mdt.length - 1)
+            //mdt = mdt.substring(1, mdt.length - 1)
             var idx = 0
-            if (mdt == "Not parsed yet") {
+            if (mdt == "Not parsed yet" || mdt == "") {
                 mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
             } else if (mdt == "*| *| *| ") {
                 mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
@@ -174,6 +174,7 @@ class DataManager {
                     }
                 }
             }
+            Log.d("asdf", "asdf")
             return true
         }
         init{
