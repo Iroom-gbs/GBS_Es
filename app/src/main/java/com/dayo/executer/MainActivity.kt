@@ -64,9 +64,6 @@ class MainActivity : AppCompatActivity() {
         //navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
         //navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
         navView.setupWithNavController(navController)
-
-        Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
-
     }
 
     private val mnavviewitemreselectedListener = BottomNavigationView.OnNavigationItemReselectedListener { item->

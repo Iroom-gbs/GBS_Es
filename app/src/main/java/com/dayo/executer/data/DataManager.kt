@@ -108,8 +108,7 @@ class DataManager {
                     try {
                         val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
                             .ignoreContentType(true).get()
-                        vifo = doc.body().text() //ablr asck ex
-                        vifo = vifo.substring(1, vifo.length - 1)
+                        vifo = doc.body().text()
                         break
                     } catch (e: EOFException) { }
                 }

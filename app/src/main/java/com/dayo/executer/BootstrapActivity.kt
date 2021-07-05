@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.dayo.executer.data.DataManager
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,7 @@ class BootstrapActivity : AppCompatActivity() {
     }
     override fun onStart() {
         super.onStart()
+        Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
         val alert = AlertDialog.Builder(this@BootstrapActivity)
             .setTitle("연결 오류")
             .setMessage("인터넷이 연결되있지 않습니다.\n재시도할까요?")
