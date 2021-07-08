@@ -3,12 +3,9 @@ package com.dayo.executer.data
 import android.content.Context
 import android.util.Log
 import android.view.Gravity
-import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.transition.Slide
 import com.dayo.executer.R
 
 data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectInfo: String, val teacherInfo: String, val roomInfo: String, val elseInfo: String, val changed: Boolean = false) {
@@ -17,15 +14,14 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
             Log.d("asdf", s)
             val rtn = mutableListOf(mutableListOf<TimeTableData>())
             rtn.add(mutableListOf())
-            val psdat = s
             var idx = 1
-            for(i in psdat.split('`')){
+            for (i in s.split('`')) {
                 rtn.add(mutableListOf())
-                if(i.length < 2) {
+                if (i.length < 2) {
                     idx++
                     continue
                 }
-                for(time in i.split('^')) {
+                for (time in i.split('^')) {
                     if (time.length < 2) break
 
                     val dat = time.split('|')
@@ -38,7 +34,7 @@ data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectI
                             teacherInfo = dat[3],
                             roomInfo = dat[4],
                             elseInfo = dat[5],
-                            changed = when(dat[6]){
+                            changed = when (dat[6]) {
                                 "1" -> true
                                 else -> false
                             }

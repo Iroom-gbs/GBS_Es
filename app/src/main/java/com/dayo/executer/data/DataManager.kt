@@ -12,6 +12,7 @@ import com.dayo.executer.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import java.io.EOFException
 import java.util.*
@@ -103,6 +104,8 @@ class DataManager {
 
         private fun loadNetworkData(): Boolean {
             if (!online) return false
+            var fin = false
+            var er = false
             CoroutineScope(Dispatchers.Default).launch {
                 while(true) {
                     try {
@@ -110,9 +113,22 @@ class DataManager {
                             .ignoreContentType(true).get()
                         vifo = doc.body().text()
                         break
-                    } catch (e: EOFException) { }
+                    } catch (e: HttpStatusException) {
+                        Log.d("httpException", e.statusCode.toString())
+                        if(e.statusCode == 502) {
+                            timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
+                            vifo = "2.1.1"
+                            mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
+                            er = true
+                            break
+                        }
+                    }
+                    catch (e: EOFException) { }
                 }
+                fin = true
             }
+            while(!fin) { }
+            if(er) return true
             var tableData = ""
             CoroutineScope(Dispatchers.Default).launch {
                 while(true) {
@@ -128,7 +144,6 @@ class DataManager {
             while (tableData == "")
                 Thread.sleep(100)
             tableData = tableData.replace("null", "")
-            //tableData = tableData.substring(1, tableData.length - 1)
             Log.d("asdf", tableData)
             if (tableData == "not parsed yet") {
                 timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
@@ -153,7 +168,6 @@ class DataManager {
             while (mdt == "")
                 Thread.sleep(100)
             mdt = mdt.replace("null", "")
-            //mdt = mdt.substring(1, mdt.length - 1)
             var idx = 0
             if (mdt == "Not parsed yet" || mdt == "") {
                 mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
