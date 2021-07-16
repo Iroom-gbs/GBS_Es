@@ -8,7 +8,7 @@ GBS Essential project
 ## Info
  - 이 프로젝트는 경기북과학고 17기 학생들이 더욱 더 smart한 북곽을 만들기 위하여 시작한 프로젝트입니다.
  - 현재 [Play store][PlayStore]에서 최신 버전 다운로드가 가능합니다.
- - iOS 지원 계획은 없습니다.
+ - iOS 지원 계획은 없습니다. => 현재 zlfn이 개발중입니다.
  
 
 ## Feature development info
@@ -24,9 +24,9 @@ GBS Essential project
 
 ### 진행 예정 / 진행중
  - Server side program develop
- - UI/UX
+ - UI/UX => 대형 수정 예정
  - 분실물 찾기 feature
- - 자가진단, 학습실 신청, 과제 관련 알림 푸시(w. GCP, FCM)
+ - 자가진단, 학습실 신청, 과제 관련 알림 푸시(w. Azure, FCM)
  - 과제 리스트 및 다운로드 기능
  - School map view feature
  - Simple in-school navigaion feature which able to find some objects
