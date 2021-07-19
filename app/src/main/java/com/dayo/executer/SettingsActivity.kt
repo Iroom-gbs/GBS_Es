@@ -2,7 +2,7 @@ package com.dayo.executer
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceFragmentCompat
+import com.dayo.executer.ui.SettingsFragment
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -18,10 +18,11 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
     }
-
+/*
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
     }
+    */
 }
