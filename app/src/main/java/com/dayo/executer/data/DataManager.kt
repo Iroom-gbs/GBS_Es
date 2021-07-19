@@ -17,7 +17,7 @@ import org.jsoup.Jsoup
 import java.io.EOFException
 import java.util.*
 
-
+//TODO: ** Important: When loadDataCalled more then twice, app will goto ANR, require to fix **
 class DataManager {
     companion object {
         var weeklyTimeTableData = mutableListOf<MutableList<TimeTableData>>()
@@ -104,7 +104,7 @@ class DataManager {
             if (!online) return false
             var fin = false
             var er = false
-            CoroutineScope(Dispatchers.Default).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 while(true) {
                     try {
                         val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
@@ -128,7 +128,7 @@ class DataManager {
             while(!fin) { }
             if(er) return true
             var tableData = ""
-            CoroutineScope(Dispatchers.Default).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 while(true) {
                     try {
                         val doc =
@@ -152,7 +152,7 @@ class DataManager {
                     timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
             }
             var mdt = ""
-            CoroutineScope(Dispatchers.Default).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 while(true) {
                     try {
                         val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
@@ -188,6 +188,7 @@ class DataManager {
             Log.d("asdf", "asdf")
             return true
         }
+
         init{
             try {
                 (App.appContext!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
