@@ -1,17 +1,12 @@
-package com.dayo.executer
+package com.dayo.executer.service
 
-import android.app.Service
-import android.content.Intent
-import android.os.IBinder
-import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Toast
+import com.dayo.executer.App
 import com.dayo.executer.data.DataManager
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.firebase.messaging.directboot.FirebaseMessagingDirectBootReceiver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

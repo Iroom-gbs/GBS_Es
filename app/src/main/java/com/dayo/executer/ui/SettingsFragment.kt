@@ -6,10 +6,8 @@ import android.text.InputFilter
 import android.text.InputType
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.Switch
 import androidx.preference.*
-import com.dayo.executer.FCMService
+import com.dayo.executer.service.FCMService
 import com.dayo.executer.R
 import com.dayo.executer.data.DataManager
 import com.google.firebase.messaging.FirebaseMessaging
