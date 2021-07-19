@@ -6,7 +6,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <supports-screens android:anyDensity="true" android:largeScreens="true" />
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true" />
 
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_channel_id"
@@ -23,11 +25,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-        
-        <activity android:name=".BootstrapActivity"
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
+        <activity
+            android:name=".BootstrapActivity"
             android:label="GBS Essential"
             android:launchMode="singleInstance"
-            android:noHistory="true" >
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

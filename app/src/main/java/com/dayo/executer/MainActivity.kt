@@ -2,6 +2,7 @@ package com.dayo.executer
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
@@ -35,6 +36,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }).show()
+        }
+
+        findViewById<Button>(R.id.settings_button).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
     }
 }
