@@ -1,7 +1,9 @@
 package com.dayo.executer
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.dayo.executer.ui.*
@@ -17,7 +19,20 @@ class MainActivity : AppCompatActivity() {
         infoViewPage.adapter = InfoViewPageAdapter(this)
 
         findViewById<FloatingActionButton>(R.id.menu_fab).setOnClickListener {
-            MenuDialog(this).show()
+            MenuDialog(this, object:MenuDialogOnClickListener{
+                override fun OnAsckBtnClick() {
+                    startActivity(Intent(this@MainActivity, AsckActivity::class.java))
+                }
+
+                override fun OnMapBtnClick() {
+                    Toast.makeText(this@MainActivity, "Not supported yet", Toast.LENGTH_LONG).show()
+                }
+
+                override fun OnAblrBtnClick() {
+                    Toast.makeText(this@MainActivity, "Not supported yet", Toast.LENGTH_LONG).show()
+                }
+
+            }).show()
         }
     }
 }
