@@ -8,6 +8,8 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.dayo.executer.data.DataManager
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,6 +22,16 @@ class BootstrapActivity : AppCompatActivity() {
     }
     override fun onStart() {
         super.onStart()
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if(!task.isSuccessful){
+                Toast.makeText(baseContext, "FCM token generation failed.", Toast.LENGTH_LONG).show()
+                return@OnCompleteListener
+            }
+
+            val token = task.result
+            Log.d("asdf", token.toString())
+        })
+
         Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
         val alert = AlertDialog.Builder(this@BootstrapActivity)
             .setTitle("연결 오류")

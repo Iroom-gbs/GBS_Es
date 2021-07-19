@@ -32,6 +32,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initUI() {
+        /*
         m = (activity as MainActivity)
         nav = m.findViewById(R.id.nav_view)
 
@@ -110,6 +111,7 @@ class HomeFragment : Fragment() {
                 intent.putExtra("dataInfo", "tmp")
             startActivity(intent)
         }
+        */
     }
 
     fun initAblrTable() {
@@ -151,6 +153,6 @@ class HomeFragment : Fragment() {
     override fun onStop() {
         super.onStop()
 
-        (activity as MainActivity).findViewById<FloatingActionButton>(R.id.addAblrDataFab)?.visibility = View.GONE
+        //(activity as MainActivity).findViewById<FloatingActionButton>(R.id.addAblrDataFab)?.visibility = View.GONE
     }
 }
