@@ -115,6 +115,7 @@ class HomeFragment : Fragment() {
     }
 
     fun initAblrTable() {
+        /*
         val ablrTable = view?.findViewById<TableLayout>(R.id.ablrTable)
         ablrTable?.removeAllViews()
         if(DataManager.noTempDataInHomeFragment)
@@ -142,6 +143,7 @@ class HomeFragment : Fragment() {
             }
             ablrTable?.addView(row)
         }
+         */
     }
 
     override fun onStart() {

@@ -31,7 +31,7 @@ class DataManager {
         var ablrPW = ""
         var asckPW = ""
         var classInfo = ""
-        var noTempDataInHomeFragment = false
+        //var noTempDataInHomeFragment = false
 
         var asckDt = 0L
         var asckDsel = 0L
@@ -66,7 +66,6 @@ class DataManager {
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("alwaysReceiveAsckAlert", alwaysReceiveAsckAlert)
                 putBoolean("lowProtect", lowProtect)
-                putBoolean ("noTempDataInHomeFragment", noTempDataInHomeFragment)
                 putBoolean("alwaysReceiveTimeTableData", alwaysReceiveTimeTableData)
                 putBoolean("receiveSwdTimeTableData", receiveSwdTimeTableData)
                 putBoolean("receiveDebugFCMData", receiveDebugFCMData)
@@ -93,7 +92,6 @@ class DataManager {
             asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
             alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
             lowProtect = sharedPref.getBoolean("lowProtect", false)
-            noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
             alwaysReceiveTimeTableData = sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
             receiveSwdTimeTableData = sharedPref.getBoolean("receiveSwdTimeTableData", false)
             receiveDebugFCMData = sharedPref.getBoolean("receiveDebugFCMData", false)
