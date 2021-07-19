@@ -31,7 +31,6 @@ class DataManager {
         var ablrPW = ""
         var asckPW = ""
         var classInfo = ""
-        //var noTempDataInHomeFragment = false
 
         var asckDt = 0L
         var asckDsel = 0L
