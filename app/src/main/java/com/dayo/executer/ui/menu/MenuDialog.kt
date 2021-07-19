@@ -1,4 +1,4 @@
-package com.dayo.executer.ui
+package com.dayo.executer.ui.menu
 
 import android.app.Dialog
 import android.content.Context
@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import com.dayo.executer.R
+import com.dayo.executer.ui.menu.MenuDialogOnClickListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MenuDialog(context: Context, private val listener: MenuDialogOnClickListener): Dialog(context) {
