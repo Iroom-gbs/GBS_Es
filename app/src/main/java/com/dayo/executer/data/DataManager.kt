@@ -9,15 +9,13 @@ import android.net.NetworkRequest
 import android.util.Log
 import androidx.core.content.edit
 import com.dayo.executer.App
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import java.io.EOFException
+import java.net.ConnectException
 import java.util.*
 
-//TODO: ** Important: When loadDataCalled more then twice, app will goto ANR, require to fix **
 class DataManager {
     companion object {
         var weeklyTimeTableData = mutableListOf<MutableList<TimeTableData>>()
@@ -33,8 +31,8 @@ class DataManager {
         var classInfo = ""
 
         var asckDt = 0L
-        var asckDsel = 0L
-        var asckDs = 0L
+        //var asckDsel = 0L
+        //var asckDs = 0L
         var asckUseAdvOpt = false
         var alwaysReceiveAsckAlert = false
 
@@ -60,8 +58,8 @@ class DataManager {
                 putString("asckPW", asckPW)
                 putString("classInfo", classInfo)
                 putLong("asckDt", asckDt)
-                putLong("asckDsel", asckDsel)
-                putLong("asckDs", asckDs)
+                //putLong("asckDsel", asckDsel)
+                //putLong("asckDs", asckDs)
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("alwaysReceiveAsckAlert", alwaysReceiveAsckAlert)
                 putBoolean("lowProtect", lowProtect)
@@ -73,54 +71,114 @@ class DataManager {
         }
 
         fun loadSettings(): Boolean {
-            todayAblrTableData = mutableListOf()
-            mealData = mutableListOf()
+            CoroutineScope(Dispatchers.IO).launch {
+                todayAblrTableData = mutableListOf()
+                mealData = mutableListOf()
 
-            dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-            Log.d("asdf", dayOfWeek.toString())
-            val ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
-            for (i in AblrData.stringToAblrData(ablrData))
-                todayAblrTableData.add(i)
-            ablrID = sharedPref.getString("ablrID", "")!!
-            ablrPW = sharedPref.getString("ablrPW", "")!!
-            asckPW = sharedPref.getString("asckPW", "")!!
-            classInfo = sharedPref.getString("classInfo", "1-1")!!
-            asckDt = sharedPref.getLong("asckDt", 10L)
-            asckDsel = sharedPref.getLong("asckDsel", 1500L)
-            asckDs = sharedPref.getLong("asckDs", 1000L)
-            asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
-            alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
-            lowProtect = sharedPref.getBoolean("lowProtect", false)
-            alwaysReceiveTimeTableData = sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
-            receiveSwdTimeTableData = sharedPref.getBoolean("receiveSwdTimeTableData", false)
-            receiveDebugFCMData = sharedPref.getBoolean("receiveDebugFCMData", false)
-            tmpAblrData = mutableListOf()
-            tmpAblrData.addAll(todayAblrTableData)
+                dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+                Log.d("asdf", dayOfWeek.toString())
+                val ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
+                for (i in AblrData.stringToAblrData(ablrData))
+                    todayAblrTableData.add(i)
+                ablrID = sharedPref.getString("ablrID", "")!!
+                ablrPW = sharedPref.getString("ablrPW", "")!!
+                asckPW = sharedPref.getString("asckPW", "")!!
+                classInfo = sharedPref.getString("classInfo", "1-1")!!
+                asckDt = sharedPref.getLong("asckDt", 500L)
+                //asckDsel = sharedPref.getLong("asckDsel", 1500L)
+                //asckDs = sharedPref.getLong("asckDs", 1000L)
+                asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
+                alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
+                lowProtect = sharedPref.getBoolean("lowProtect", false)
+                alwaysReceiveTimeTableData =
+                    sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
+                receiveSwdTimeTableData = sharedPref.getBoolean("receiveSwdTimeTableData", false)
+                receiveDebugFCMData = sharedPref.getBoolean("receiveDebugFCMData", false)
+                tmpAblrData = mutableListOf()
+                tmpAblrData.addAll(todayAblrTableData)
+            }
             return loadNetworkData()
         }
 
         private fun loadNetworkData(): Boolean {
-            if (!online) return false
+            if(!online) return false
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    var doc = Jsoup.connect("http://20.41.76.129/gbses/version")
+                        .ignoreContentType(true).get()
+                    vifo = doc.body().text()
+                    doc = Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
+                            .ignoreContentType(true).get()
+                    var tableData = doc.body().text()
+                    tableData = tableData.replace("null", "")
+                    Log.d("asdf", tableData)
+                    if (tableData == "not parsed yet") {
+                        timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
+                    } else {
+                        weeklyTimeTableData = TimeTableData.stringToTimeTableData(tableData)
+                        timeTableData = weeklyTimeTableData[dayOfWeek - 1]
+                        if (timeTableData.size == 0)
+                            timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
+                    }
+                    doc = Jsoup.connect("http://20.41.76.129/api/meal/")
+                        .ignoreContentType(true).get()
+                    val mdt = doc.body().text().replace("null", "")
+                    var idx = 0
+                    if (mdt == "Not parsed yet" || mdt == "") {
+                        mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
+                    } else if (mdt == "*| *| *| ") {
+                        mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
+                    } else {
+                        mealData.add(mutableListOf())
+                        for (x in mdt.split(' ')) {
+                            if (x == "석식") break
+                            if (x == "*|") {
+                                mealData.add(mutableListOf())
+                                Log.d("asdf", mealData[idx].joinToString())
+                                idx++
+                                if (idx == 3) break
+                            } else {
+                                mealData[idx].add(MealData.stringToMealData(x))
+                            }
+                        }
+                    }
+                }
+                catch(_: Exception){
+                    timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
+                    vifo = "2.1.1"
+                    mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
+                }
+                /*catch (e: ConnectException) {
+                    Log.d("Connection error", e.message.toString())
+                } catch (e: HttpStatusException) {
+                    Log.d("httpException", e.statusCode.toString())
+                    if (e.statusCode == 502) {
+                        timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
+                        vifo = "2.1.1"
+                        mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
+                    }
+                }
+                 */
+            }
+            /*
+            Log.d("asdf", "asdfasdfasdfasdf")
             var fin = false
             var er = false
             CoroutineScope(Dispatchers.IO).launch {
-                while(true) {
-                    try {
-                        val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
-                            .ignoreContentType(true).get()
-                        vifo = doc.body().text()
-                        break
-                    } catch (e: HttpStatusException) {
-                        Log.d("httpException", e.statusCode.toString())
-                        if(e.statusCode == 502) {
-                            timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-                            vifo = "2.1.1"
-                            mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
-                            er = true
-                            break
-                        }
+                try {
+                    val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
+                        .ignoreContentType(true).get()
+                    vifo = doc.body().text()
+                } catch (e: ConnectException) {
+                    Log.d("Connection error", e.message.toString())
+                } catch (e: HttpStatusException) {
+                    Log.d("httpException", e.statusCode.toString())
+                    if (e.statusCode == 502) {
+                        timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
+                        vifo = "2.1.1"
+                        mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
+                        er = true
                     }
-                    catch (e: EOFException) { }
                 }
                 fin = true
             }
@@ -128,14 +186,12 @@ class DataManager {
             if(er) return true
             var tableData = ""
             CoroutineScope(Dispatchers.IO).launch {
-                while(true) {
-                    try {
-                        val doc =
-                            Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
-                                .ignoreContentType(true).get()
-                        tableData = doc.body().text()
-                        break
-                    } catch (e: EOFException) { }
+                try {
+                    val doc =
+                        Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
+                            .ignoreContentType(true).get()
+                    tableData = doc.body().text()
+                } catch (e: EOFException) {
                 }
             }
             while (tableData == "")
@@ -152,15 +208,12 @@ class DataManager {
             }
             var mdt = ""
             CoroutineScope(Dispatchers.IO).launch {
-                while(true) {
-                    try {
-                        val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
-                            .ignoreContentType(true).get()
-                        mdt = doc.body().text()
-                        Log.d("asdf", mdt)
-                        break
-                    } catch (e: EOFException) { }
-                }
+                try {
+                    val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
+                        .ignoreContentType(true).get()
+                    mdt = doc.body().text()
+                    Log.d("asdf", mdt)
+                } catch (e: EOFException) { }
             }
             while (mdt == "")
                 Thread.sleep(100)
@@ -184,7 +237,8 @@ class DataManager {
                     }
                 }
             }
-            Log.d("asdf", "asdf")
+            Log.d("asdf", "aaaaaaaaaaaaaaaaaaaaaaaaa")
+             */
             return true
         }
 

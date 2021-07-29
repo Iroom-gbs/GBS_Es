@@ -32,29 +32,6 @@
             app:summaryOn="매일 아침 자가진단 알림을 받습니다."
             app:title="매일 아침 자가진단 알림받기" />
 
-        <SwitchPreference
-            app:defaultValue="false"
-            app:key="asckAdv"
-            app:title="Use advanced options" />
-
-        <EditTextPreference
-            app:dependency="asckAdv"
-            app:key="dt"
-            app:summary="Delay time in automatic self check logic"
-            app:title="dt" />
-
-        <EditTextPreference
-            app:dependency="asckAdv"
-            app:key="dsel"
-            app:summary="Delay time in automatic self check selection logic"
-            app:title="dsel" />
-
-        <EditTextPreference
-            app:dependency="asckAdv"
-            app:key="ds"
-            app:summary="Delay time in automatic self check logic starts"
-            app:title="ds" />
-
     </PreferenceCategory>
 
     <PreferenceCategory app:title="시간표">
@@ -77,15 +54,26 @@
             app:title="데이터 다시 로드" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Debug Options">
-        <SwitchPreference
-            app:key="debugFCM"
-            app:title="Receive DEBUG FCM Data" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="Developers" >
         <Preference app:title="Dayo" />
         <Preference app:title="Kiroo" />
         <Preference app:title="Hegel" />
-        <Preference />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="고급">
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="asckAdv"
+            app:title="고급 옵션 사용" />
+
+        <EditTextPreference
+            app:dependency="asckAdv"
+            app:key="dt"
+            app:summary="자가진단 진행 속도 조정, 진행중 오류 발생(비밀번호 오류 등)이 잦다면 수치를 증가시키세요 :D(기본값: 500)"
+            app:title="자가진단 속도" />
+
+        <SwitchPreference
+            app:dependency="asckAdv"
+            app:key="debugFCM"
+            app:title="Debug: Receive DEBUG FCM Data" />
     </PreferenceCategory>
 </PreferenceScreen>

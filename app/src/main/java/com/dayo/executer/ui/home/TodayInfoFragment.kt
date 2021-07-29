@@ -24,6 +24,7 @@ class TodayInfoFragment : Fragment() {
         super.onStart()
         view?.let { view ->
             val dailyTimeTable = view.findViewById<TableLayout>(R.id.home_daily_timetable)
+            dailyTimeTable.removeAllViews()
             for(d in DataManager.timeTableData){
                 dailyTimeTable.addView(NewHomeTimeTableRow(requireContext(), d))
             }

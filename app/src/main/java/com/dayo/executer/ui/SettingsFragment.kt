@@ -11,6 +11,8 @@ import com.dayo.executer.service.FCMService
 import com.dayo.executer.R
 import com.dayo.executer.data.DataManager
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -103,34 +105,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 val fArray = arrayOfNulls<InputFilter>(1)
                 fArray[0] = InputFilter.LengthFilter(4)
                 it.filters = fArray
-            }
-        }
-
-        findPreference<EditTextPreference>("dsel")?.let {
-            it.text = DataManager.asckDsel.toString()
-            it.setOnPreferenceChangeListener { _, newValue ->
-                DataManager.asckDsel = newValue.toString().toLong()
-                true
-            }
-            it.setOnBindEditTextListener { it2 ->
-                it2.inputType = InputType.TYPE_CLASS_NUMBER
-                val fArray = arrayOfNulls<InputFilter>(1)
-                fArray[0] = InputFilter.LengthFilter(4)
-                it2.filters = fArray
-            }
-        }
-
-        findPreference<EditTextPreference>("ds")?.let {
-            it.text = DataManager.asckDs.toString()
-            it.setOnPreferenceChangeListener { _, newValue ->
-                DataManager.asckDs = newValue.toString().toLong()
-                true
-            }
-            it.setOnBindEditTextListener { it2 ->
-                it2.inputType = InputType.TYPE_CLASS_NUMBER
-                val fArray = arrayOfNulls<InputFilter>(1)
-                fArray[0] = InputFilter.LengthFilter(4)
-                it2.filters = fArray
             }
         }
 

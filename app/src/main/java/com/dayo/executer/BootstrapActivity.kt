@@ -10,10 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import com.dayo.executer.data.DataManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class BootstrapActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,13 +30,17 @@ class BootstrapActivity : AppCompatActivity() {
         })
 
         Toast.makeText(this, "버전 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
+
         val alert = AlertDialog.Builder(this@BootstrapActivity)
             .setTitle("연결 오류")
             .setMessage("인터넷이 연결되있지 않습니다.\n재시도할까요?")
-            .setPositiveButton("재시도") { _, _ -> tryInit() }
+            .setPositiveButton("재시도") { _, _ ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    tryInit()
+                }
+            }
             .setNeutralButton("앱 종료하기") { _, _ -> finishAndRemoveTask() }
             .create()
-
         CoroutineScope(Dispatchers.Default).launch {
             delay(1500)
             while(true) {
@@ -66,7 +67,7 @@ class BootstrapActivity : AppCompatActivity() {
         }
     }
 
-    private fun tryInit(): Boolean {
+    private suspend fun tryInit(): Boolean {
         return if(DataManager.online && DataManager.loadSettings()){
             startActivity(Intent(this@BootstrapActivity, MainActivity::class.java))
             Log.e("asdf", "asdf")
