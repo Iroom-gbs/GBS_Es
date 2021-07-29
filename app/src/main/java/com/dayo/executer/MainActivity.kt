@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.dayo.executer.data.DataManager
@@ -46,5 +47,14 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.settings_button).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("종료")
+            .setMessage("종료하시겠습니까?")
+            .setPositiveButton("Yes") { _, _ -> finishAndRemoveTask()}
+            .setNegativeButton("No") { _, _ -> }
+            .create().show()
     }
 }
