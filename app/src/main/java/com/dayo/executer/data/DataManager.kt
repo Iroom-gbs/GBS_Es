@@ -18,36 +18,34 @@ import java.util.*
 
 class DataManager {
     companion object {
-        var weeklyTimeTableData = mutableListOf<MutableList<TimeTableData>>()
-        var timeTableData = mutableListOf<TimeTableData>()
-        var todayAblrTableData = mutableListOf<AblrData>()
-        var tmpAblrData = mutableListOf<AblrData>()
-        var mealData = mutableListOf<MutableList<MealData>>()
+        var weeklyTimeTableData = mutableListOf<MutableList<TimeTableData>>() // 주간 시간표 리스트
+        var timeTableData = mutableListOf<TimeTableData>() // 일일 시간표 리스트
+        var todayAblrTableData = mutableListOf<AblrData>() // 금일 학습실 신청 리스트
+        var tmpAblrData = mutableListOf<AblrData>() // 삭제 예정
+        var mealData = mutableListOf<MutableList<MealData>>() // 금일 급식 데이터
 
         private val sharedPref = App.appContext!!.getSharedPreferences("settings", MODE_PRIVATE)
-        var ablrID = ""
-        var ablrPW = ""
-        var asckPW = ""
-        var classInfo = ""
+        var ablrID = "" // 스마트 기숙관리 ID
+        var ablrPW = "" // 스마트 기숙관리 비밀번호
+        var asckPW = "" // 자가진단 비밀번호
+        var classInfo = "" // 학년, 반 번호
 
-        var asckDt = 0L
-        //var asckDsel = 0L
-        //var asckDs = 0L
-        var asckUseAdvOpt = false
-        var alwaysReceiveAsckAlert = false
+        var asckDt = 0L // 자가진단 딜레이 수치
+        var asckUseAdvOpt = false // (구) 자가진단 관련 고급 옵션 표시, (변경) 고급 옵션 표시
+        var alwaysReceiveAsckAlert = false // 아침마다 자가진단 데이터 수신 여부
 
-        var alwaysReceiveTimeTableData = false
-        var receiveSwdTimeTableData = false
+        var alwaysReceiveTimeTableData = false // 매 시간마다 시간표 수신 여부
+        var receiveSwdTimeTableData = false // 변경된 시간마다 시간표 수신 여부
 
-        var lowProtect = false
+        var lowProtect = false // 예측하지 못한 http 통신 허용 여부
 
-        var dayOfWeek = -1
+        var dayOfWeek = -1 // 말그대로 일주일중 몇번째날인가
 
-        var online = false
+        var online = false // 인터넷 연결 여부
 
-        var vifo = ""
+        var vifo = "" // 최신 버전 정보
 
-        var receiveDebugFCMData = false
+        var receiveDebugFCMData = false // FCM 디버깅 데이터 수신 여부
 
         fun saveSettings() {
             sharedPref.edit {
@@ -58,8 +56,6 @@ class DataManager {
                 putString("asckPW", asckPW)
                 putString("classInfo", classInfo)
                 putLong("asckDt", asckDt)
-                //putLong("asckDsel", asckDsel)
-                //putLong("asckDs", asckDs)
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("alwaysReceiveAsckAlert", alwaysReceiveAsckAlert)
                 putBoolean("lowProtect", lowProtect)
@@ -70,13 +66,20 @@ class DataManager {
             }
         }
 
+        /**
+         * @suppress Hello World
+         * @return 네트워크 정보 수신 성공시 true 반환, 실패시 false 반환, 서버가 닫힌경우엔 true를 반환합니다.
+         */
         fun loadSettings(): Boolean {
             CoroutineScope(Dispatchers.IO).launch {
+                //Clear list
                 todayAblrTableData = mutableListOf()
                 mealData = mutableListOf()
 
                 dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
                 Log.d("asdf", dayOfWeek.toString())
+
+                //Initialize data from sharedPreference
                 val ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
                 for (i in AblrData.stringToAblrData(ablrData))
                     todayAblrTableData.add(i)
@@ -85,8 +88,6 @@ class DataManager {
                 asckPW = sharedPref.getString("asckPW", "")!!
                 classInfo = sharedPref.getString("classInfo", "1-1")!!
                 asckDt = sharedPref.getLong("asckDt", 500L)
-                //asckDsel = sharedPref.getLong("asckDsel", 1500L)
-                //asckDs = sharedPref.getLong("asckDs", 1000L)
                 asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
                 alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
                 lowProtect = sharedPref.getBoolean("lowProtect", false)
@@ -101,12 +102,15 @@ class DataManager {
         }
 
         private fun loadNetworkData(): Boolean {
+            //Check is user online
             if(!online) return false
             GlobalScope.launch(Dispatchers.IO) {
                 try {
+                    //Get least version info
                     var doc = Jsoup.connect("http://20.41.76.129/gbses/version")
                         .ignoreContentType(true).get()
                     vifo = doc.body().text()
+                    //Get Timetable info
                     doc = Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
                             .ignoreContentType(true).get()
                     var tableData = doc.body().text()
@@ -120,6 +124,7 @@ class DataManager {
                         if (timeTableData.size == 0)
                             timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
                     }
+                    //Get meal info
                     doc = Jsoup.connect("http://20.41.76.129/api/meal/")
                         .ignoreContentType(true).get()
                     val mdt = doc.body().text().replace("null", "")
@@ -144,6 +149,7 @@ class DataManager {
                     }
                 }
                 catch(_: Exception){
+                    //When server closed like Gateway error(502) or not found(404)
                     timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
                     vifo = "2.1.1"
                     mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
@@ -243,6 +249,7 @@ class DataManager {
         }
 
         init{
+            //유저의 인터넷 연결 상테 변경시 발생하는 콜백 함수 생성
             try {
                 (App.appContext!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
                     .registerDefaultNetworkCallback(object : NetworkCallback() {

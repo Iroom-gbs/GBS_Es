@@ -4,6 +4,10 @@ import android.content.Context
 import android.widget.TableRow
 import android.widget.TextView
 
+/**
+ * @param menu 음식 이름
+ * @param allergy 알레르기 정보를 담은 리스트
+ */
 data class MealData(val menu: String, val allergy: List<Boolean>){
     companion object {
         val allFalseList = listOf(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
