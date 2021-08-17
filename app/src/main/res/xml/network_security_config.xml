@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">isds.kr</domain>
         <domain includeSubdomains="true">20.41.76.129</domain>
+        <domain includeSubdomains="true">hcs.eduro.go.kr</domain>
     </domain-config>
 </network-security-config>

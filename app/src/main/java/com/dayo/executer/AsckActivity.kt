@@ -26,19 +26,30 @@ class AsckActivity : AppCompatActivity() {
     var npwd = ""
     var ndt = 0L
     var res = ""
+    lateinit var webView: WebView
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_asck)
 
-        val webView = findViewById<WebView>(R.id.mainWebView)
-
+        webView = findViewById(R.id.mainWebView)
+        findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener {
+            webView.loadUrl("javascript:useTalkBack=false")
+            //webView.loadUrl("javascript:initmTranskey()")
+            webView.loadUrl("javascript:init()")
+            webView.loadUrl("javascript:mtk.setKeyboard(document.getElementById('password'));")
+            //webView.loadUrl("javascript:transkey['password'].onKeyboardCount=0;")
+            webView.loadUrl("javascript:mtk.onKeyboard(document.getElementById('password'));")
+        }
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.loadsImagesAutomatically = true
         webView.settings.setSupportZoom(false)
+        webView.settings.allowContentAccess = true
+
         webView.settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+        webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -77,8 +88,9 @@ class AsckActivity : AppCompatActivity() {
                         .setMessage("최초 등록은 수동으로 진행해야 합니다\n등록 후 설정에서 초기설정을 진행해주세요!\n초기 설정 이후 자동화가 가능합니다. :D")
                         .setPositiveButton("OK") { _, _ -> }
                         .create().show()
+
                 }
-                if(newProgress == 100 && execute) {
+                else if(newProgress == 100 && execute) {
                     if(!executeList.contains(view?.url!!)) {
                         executeList.add(view.url!!)
                         CoroutineScope(Dispatchers.Default).launch {
@@ -88,7 +100,12 @@ class AsckActivity : AppCompatActivity() {
                                     "https://hcs.eduro.go.kr/#/loginWithUserInfo", "https://hcs.eduro.go.kr/#/relogin" -> {
                                         //webView.loadUrl("javascript:document.getElementsByTagName(\"input\")[0].setRangeText(\"$npwd\")")
                                         delay(ndt)
-                                        webView.loadUrl("javascript:mtk.onKeyboard(document.getElementById('password'))")
+                                        Log.d("asdf", "asdfasdfasdf")
+                                        webView.loadUrl("javascript:transkey['password'].onKeyboardCount=0;")
+                                        webView.loadUrl("javascript:mtk.onKeyboard(document.getElementById('password'));")
+                                        //webView.loadUrl("javascript:init()")
+                                        //webView.loadUrl("javascript:document.getElementById('password').focus()")
+
                                         delay(ndt)
                                         getHTML(webView)
                                         delay(ndt)
@@ -129,7 +146,7 @@ class AsckActivity : AppCompatActivity() {
             }
         }
         webView.loadUrl("https://eduro.goe.go.kr/hcheck/index.jsp")
-
+/*
         CoroutineScope(Dispatchers.Default).launch {
             delay(DataManager.asckDt)
             CoroutineScope(Dispatchers.Main).launch {
@@ -139,7 +156,7 @@ class AsckActivity : AppCompatActivity() {
                 execute = true
                 webView.loadUrl("https://eduro.goe.go.kr/hcheck/index.jsp")
             }
-        }
+        }*/
     }
 
     override fun onBackPressed() {

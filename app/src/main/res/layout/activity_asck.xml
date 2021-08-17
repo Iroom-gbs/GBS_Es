@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".AsckActivity">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:srcCompat="@drawable/border" />
+
     <WebView
         android:id="@+id/mainWebView"
         android:layout_width="match_parent"
@@ -13,6 +20,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </WebView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

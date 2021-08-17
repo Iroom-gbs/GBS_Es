@@ -2,6 +2,7 @@ package com.dayo.executer
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.dayo.executer.data.DataManager
+import com.dayo.executer.service.AsckService
 import com.dayo.executer.ui.*
 import com.dayo.executer.ui.home.InfoViewPageAdapter
 import com.dayo.executer.ui.menu.MenuDialog
@@ -30,7 +32,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.menu_fab).setOnClickListener {
             MenuDialog(this, object: MenuDialogOnClickListener {
                 override fun OnAsckBtnClick() {
-                    startActivity(Intent(this@MainActivity, AsckActivity::class.java))
+                    //startActivity(Intent(this@MainActivity, AsckActivity::class.java))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                        startForegroundService(Intent(this@MainActivity, AsckService::class.java))
+                    else startService(Intent(this@MainActivity, AsckService::class.java))
                 }
 
                 override fun OnMapBtnClick() {

@@ -61,6 +61,28 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+        findPreference<EditTextPreference>("asckName")?.let {
+            it.text = DataManager.asckName
+            it.setOnPreferenceChangeListener { _, newValue ->
+                DataManager.asckName = newValue.toString()
+                true
+            }
+        }
+
+        findPreference<EditTextPreference>("asckBirth")?.let {
+            it.text = DataManager.asckBirth
+            it.setOnPreferenceChangeListener { _, newValue ->
+                DataManager.asckBirth = newValue.toString()
+                true
+            }
+            it.setOnBindEditTextListener { it2 ->
+                it2.inputType = InputType.TYPE_CLASS_NUMBER
+                val fArray = arrayOfNulls<InputFilter>(1)
+                fArray[0] = InputFilter.LengthFilter(6)
+                it2.filters = fArray
+            }
+        }
+
         findPreference<EditTextPreference>("asckPW")?.let {
             it.text = DataManager.asckPW
             it.setOnPreferenceChangeListener { _, newValue ->
@@ -91,20 +113,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             it.setOnPreferenceChangeListener { _, newValue ->
                 DataManager.asckUseAdvOpt = newValue as Boolean
                 true
-            }
-        }
-
-        findPreference<EditTextPreference>("dt")?.let {
-            it.text = DataManager.asckDt.toString()
-            it.setOnPreferenceChangeListener { _, newValue ->
-                DataManager.asckDt = newValue.toString().toLong()
-                true
-            }
-            it.setOnBindEditTextListener {
-                it.inputType = InputType.TYPE_CLASS_NUMBER
-                val fArray = arrayOfNulls<InputFilter>(1)
-                fArray[0] = InputFilter.LengthFilter(4)
-                it.filters = fArray
             }
         }
 

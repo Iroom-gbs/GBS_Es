@@ -28,9 +28,10 @@ class DataManager {
         var ablrID = "" // 스마트 기숙관리 ID
         var ablrPW = "" // 스마트 기숙관리 비밀번호
         var asckPW = "" // 자가진단 비밀번호
+        var asckName = ""
+        var asckBirth = ""
         var classInfo = "" // 학년, 반 번호
 
-        var asckDt = 0L // 자가진단 딜레이 수치
         var asckUseAdvOpt = false // (구) 자가진단 관련 고급 옵션 표시, (변경) 고급 옵션 표시
         var alwaysReceiveAsckAlert = false // 아침마다 자가진단 데이터 수신 여부
 
@@ -54,8 +55,9 @@ class DataManager {
                 putString("ablrID", ablrID)
                 putString("ablrPW", ablrPW)
                 putString("asckPW", asckPW)
+                putString("asckName", asckName)
+                putString("asckBirth", asckBirth)
                 putString("classInfo", classInfo)
-                putLong("asckDt", asckDt)
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("alwaysReceiveAsckAlert", alwaysReceiveAsckAlert)
                 putBoolean("lowProtect", lowProtect)
@@ -85,9 +87,10 @@ class DataManager {
                     todayAblrTableData.add(i)
                 ablrID = sharedPref.getString("ablrID", "")!!
                 ablrPW = sharedPref.getString("ablrPW", "")!!
+                asckName = sharedPref.getString("asckName", "")!!
+                asckBirth = sharedPref.getString("asckBirth", "")!!
                 asckPW = sharedPref.getString("asckPW", "")!!
                 classInfo = sharedPref.getString("classInfo", "1-1")!!
-                asckDt = sharedPref.getLong("asckDt", 500L)
                 asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
                 alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
                 lowProtect = sharedPref.getBoolean("lowProtect", false)
