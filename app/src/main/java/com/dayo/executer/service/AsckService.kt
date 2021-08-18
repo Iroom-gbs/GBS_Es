@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.dayo.executer.App
 import com.dayo.executer.MainActivity
 import com.dayo.executer.data.DataManager
 import kotlinx.coroutines.CoroutineScope
@@ -61,10 +62,8 @@ class AsckService : Service() {
                     URL("http://20.41.76.129/hcs?name=${DataManager.asckName}&birth=${DataManager.asckBirth}&pw=${DataManager.asckPW}")
                 `is` = url.openStream() // throws an IOException
                 br = BufferedReader(InputStreamReader(`is`))
-                while (br.readLine().also { line = it } != null) {
-                    //ast.makeText(this@, line, Toast.LENGTH_LONG).show()
-                    line?.toString()?.let { Log.d("asdf", it) }
-                }
+                while (br.readLine().also { line = it } != null)
+                    line?.let{Toast.makeText(App.appContext, it, Toast.LENGTH_LONG).show()}
             } catch (mue: MalformedURLException) {
                 mue.printStackTrace()
             } catch (ioe: IOException) {
@@ -78,7 +77,6 @@ class AsckService : Service() {
                 stopSelf()
             }
         }
-
         return START_STICKY
     }
 }
