@@ -5,15 +5,12 @@ import android.content.Context.MODE_PRIVATE
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
-import android.net.NetworkRequest
 import android.util.Log
 import androidx.core.content.edit
 import com.dayo.executer.App
+import com.google.gson.Gson
 import kotlinx.coroutines.*
-import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
-import java.io.EOFException
-import java.net.ConnectException
 import java.util.*
 
 class DataManager {
@@ -23,6 +20,7 @@ class DataManager {
         var todayAblrTableData = mutableListOf<AblrData>() // 금일 학습실 신청 리스트
         var tmpAblrData = mutableListOf<AblrData>() // 삭제 예정
         var mealData = mutableListOf<MutableList<MealData>>() // 금일 급식 데이터
+        var lostAndFoundData = mutableListOf<LostAndFoundInfo>()
 
         private val sharedPref = App.appContext!!.getSharedPreferences("settings", MODE_PRIVATE)
         var ablrID = "" // 스마트 기숙관리 ID
@@ -110,13 +108,9 @@ class DataManager {
             GlobalScope.launch(Dispatchers.IO) {
                 try {
                     //Get least version info
-                    var doc = Jsoup.connect("http://20.41.76.129/gbses/version")
-                        .ignoreContentType(true).get()
-                    vifo = doc.body().text()
+                    vifo = HttpConnection.DownloadString("http://20.41.76.129/gbses/version")
                     //Get Timetable info
-                    doc = Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
-                            .ignoreContentType(true).get()
-                    var tableData = doc.body().text()
+                    var tableData = HttpConnection.DownloadString("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
                     tableData = tableData.replace("null", "")
                     Log.d("asdf", tableData)
                     if (tableData == "not parsed yet") {
@@ -128,9 +122,7 @@ class DataManager {
                             timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
                     }
                     //Get meal info
-                    doc = Jsoup.connect("http://20.41.76.129/api/meal/")
-                        .ignoreContentType(true).get()
-                    val mdt = doc.body().text().replace("null", "")
+                    val mdt = HttpConnection.DownloadString("http://20.41.76.129/api/meal")
                     var idx = 0
                     if (mdt == "Not parsed yet" || mdt == "") {
                         mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
@@ -150,6 +142,10 @@ class DataManager {
                             }
                         }
                     }
+                    var dString = HttpConnection.DownloadString("http://20.41.76.129/lostandfound")
+                    dString = HttpConnection.PreParseJson(dString)
+                    val json = Gson().fromJson(dString, Array<LostAndFoundInfo>::class.java)
+                    json.forEach { lostAndFoundData.add(it) }
                 }
                 catch(_: Exception){
                     //When server closed like Gateway error(502) or not found(404)
@@ -157,97 +153,7 @@ class DataManager {
                     vifo = "2.1.1"
                     mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
                 }
-                /*catch (e: ConnectException) {
-                    Log.d("Connection error", e.message.toString())
-                } catch (e: HttpStatusException) {
-                    Log.d("httpException", e.statusCode.toString())
-                    if (e.statusCode == 502) {
-                        timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-                        vifo = "2.1.1"
-                        mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
-                    }
-                }
-                 */
             }
-            /*
-            Log.d("asdf", "asdfasdfasdfasdf")
-            var fin = false
-            var er = false
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
-                        .ignoreContentType(true).get()
-                    vifo = doc.body().text()
-                } catch (e: ConnectException) {
-                    Log.d("Connection error", e.message.toString())
-                } catch (e: HttpStatusException) {
-                    Log.d("httpException", e.statusCode.toString())
-                    if (e.statusCode == 502) {
-                        timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-                        vifo = "2.1.1"
-                        mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
-                        er = true
-                    }
-                }
-                fin = true
-            }
-            while(!fin) { }
-            if(er) return true
-            var tableData = ""
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val doc =
-                        Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
-                            .ignoreContentType(true).get()
-                    tableData = doc.body().text()
-                } catch (e: EOFException) {
-                }
-            }
-            while (tableData == "")
-                Thread.sleep(100)
-            tableData = tableData.replace("null", "")
-            Log.d("asdf", tableData)
-            if (tableData == "not parsed yet") {
-                timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-            } else {
-                weeklyTimeTableData = TimeTableData.stringToTimeTableData(tableData)
-                timeTableData = weeklyTimeTableData[dayOfWeek - 1]
-                if (timeTableData.size == 0)
-                    timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
-            }
-            var mdt = ""
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
-                        .ignoreContentType(true).get()
-                    mdt = doc.body().text()
-                    Log.d("asdf", mdt)
-                } catch (e: EOFException) { }
-            }
-            while (mdt == "")
-                Thread.sleep(100)
-            mdt = mdt.replace("null", "")
-            var idx = 0
-            if (mdt == "Not parsed yet" || mdt == "") {
-                mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
-            } else if (mdt == "*| *| *| ") {
-                mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
-            } else {
-                mealData.add(mutableListOf())
-                for (x in mdt.split(' ')) {
-                    if (x == "석식") break
-                    if (x == "*|") {
-                        mealData.add(mutableListOf())
-                        Log.d("asdf", mealData[idx].joinToString())
-                        idx++
-                        if (idx == 3) break
-                    } else {
-                        mealData[idx].add(MealData.stringToMealData(x))
-                    }
-                }
-            }
-            Log.d("asdf", "aaaaaaaaaaaaaaaaaaaaaaaaa")
-             */
             return true
         }
 

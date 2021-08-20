@@ -66,14 +66,19 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
                     android:layout_toRightOf="@id/lost_and_found_view_subject"
-                    android:text="등록하기" />
+                    android:text="등록하기"
+                    android:id="@+id/lost_and_found_register" />
             </RelativeLayout>
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp">
 
+                android:layout_margin="10dp">
+                <LinearLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:id="@+id/lost_and_found_main_view" />
             </ScrollView>
         </LinearLayout>
     </ScrollView>
@@ -82,7 +87,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/menu_fab"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="30dp"

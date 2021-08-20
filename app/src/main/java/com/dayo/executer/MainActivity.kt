@@ -4,18 +4,25 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.dayo.executer.data.DataManager
+import com.dayo.executer.data.LostAndFoundInfo
+import com.dayo.executer.data.HttpConnection
 import com.dayo.executer.service.AsckService
 import com.dayo.executer.ui.*
 import com.dayo.executer.ui.home.InfoViewPageAdapter
 import com.dayo.executer.ui.menu.MenuDialog
 import com.dayo.executer.ui.menu.MenuDialogOnClickListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 //TODO: Convert AppCompatActivity to Activity
 class MainActivity : AppCompatActivity() {
@@ -51,6 +58,17 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.settings_button).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.lost_and_found_register).setOnClickListener {
+            startActivity(Intent(this, LostAndFoundInsert::class.java))
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            var dString = HttpConnection.DownloadString("http://20.41.76.129/lostandfound")
+            dString = HttpConnection.PreParseJson(dString)
+            val json = Gson().fromJson(dString, Array<LostAndFoundInfo>::class.java)
+            json.forEach { Log.d("asdf", it.toString()) }
         }
     }
 
