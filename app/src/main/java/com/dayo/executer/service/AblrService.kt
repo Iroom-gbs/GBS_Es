@@ -1,4 +1,4 @@
-package com.dayo.executer
+package com.dayo.executer.service
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -15,6 +15,8 @@ import android.view.View
 import android.webkit.*
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.dayo.executer.App
+import com.dayo.executer.MainActivity
 import com.dayo.executer.data.AblrData
 import com.dayo.executer.data.DataManager
 import kotlinx.coroutines.CoroutineScope

@@ -1,163 +1,83 @@
 package com.dayo.executer
 
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
-import android.app.AlertDialog
 import android.util.Log
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.dayo.executer.data.DataManager
+import com.dayo.executer.data.LostAndFoundInfo
+import com.dayo.executer.data.HttpConnection
+import com.dayo.executer.service.AsckService
 import com.dayo.executer.ui.*
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import com.dayo.executer.ui.home.InfoViewPageAdapter
+import com.dayo.executer.ui.menu.MenuDialog
+import com.dayo.executer.ui.menu.MenuDialogOnClickListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 //TODO: Convert AppCompatActivity to Activity
 class MainActivity : AppCompatActivity() {
-    private val fragmenthome: Fragment = HomeFragment()
-    private val fragmentweelky:Fragment = WeeklyFragment()
-    private val fragmentlostthing: Fragment = LostThingInfoFragment()
-    private val fragmentsetting: Fragment = SettingsFragment()
-    private val fragmentmap: Fragment = MapFragment()
-    private var active : Fragment = fragmenthome
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if(!task.isSuccessful){
-                Toast.makeText(baseContext, "FCM token generation failed.", Toast.LENGTH_LONG).show()
-                return@OnCompleteListener
-            }
+        if (packageManager.getPackageInfo("com.dayo.executer", PackageManager.GET_ACTIVITIES).versionName != DataManager.vifo)
+            Toast.makeText(this, "업데이트가 필요합니다.", Toast.LENGTH_LONG).show()
 
-            val token = task.result
-            Log.d("asdf", token.toString())
-            //Toast.makeText(baseContext, token, Toast.LENGTH_LONG).show()
-        })
+        val infoViewPage = findViewById<ViewPager2>(R.id.InfoViewPage)
+        infoViewPage.adapter = InfoViewPageAdapter(this)
 
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        findViewById<FloatingActionButton>(R.id.menu_fab).setOnClickListener {
+            MenuDialog(this, object: MenuDialogOnClickListener {
+                override fun OnAsckBtnClick() {
+                    //startActivity(Intent(this@MainActivity, AsckActivity::class.java))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                        startForegroundService(Intent(this@MainActivity, AsckService::class.java))
+                    else startService(Intent(this@MainActivity, AsckService::class.java))
+                }
 
-        val navController = findNavController(R.id.nav_host_fragment)
+                override fun OnMapBtnClick() {
+                    Toast.makeText(this@MainActivity, "Not supported yet", Toast.LENGTH_LONG).show()
+                }
 
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home,
-                R.id.navigation_weekly,
-                R.id.navigation_lost_thing,
-                R.id.navigation_setting,
-                R.id.navigation_map
-            )
-        )
+                override fun OnAblrBtnClick() {
+                    Toast.makeText(this@MainActivity, "Not supported yet", Toast.LENGTH_LONG).show()
+                }
 
-        //setupActionBarWithNavController(navController, appBarConfiguration)
-        //navView.setOnNavigationItemSelectedListener(mnavviewitemselectedListener)
-        //navView.setOnNavigationItemReselectedListener(mnavviewitemreselectedListener)
-        navView.setupWithNavController(navController)
-    }
-
-    private val mnavviewitemreselectedListener = BottomNavigationView.OnNavigationItemReselectedListener { item->
-        when(item.itemId) {
-            R.id.navigation_map -> {
-                val drawer: SlidingUpPanelLayout = findViewById(R.id.main_panel)
-                if(drawer.panelState != SlidingUpPanelLayout.PanelState.DRAGGING)
-                    drawer.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
-            }
+            }).show()
         }
-    }
 
-    private val mnavviewitemselectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item->
-        when(item.itemId) {
-            R.id.navigation_home -> {
-                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.VISIBLE
-                var navView: BottomNavigationView = findViewById(R.id.nav_view)
-                var menunav: Menu = navView.menu
-                var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
-
-                mapitem.setIcon(R.drawable.ic_baseline_map_24)
-                mapitem.title = "지도"
-
-                changeFragment(fragmenthome)
-                true
-            }
-            R.id.navigation_weekly -> {
-                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
-                var navView: BottomNavigationView = findViewById(R.id.nav_view)
-                var menunav: Menu = navView.menu
-                var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
-
-                mapitem.setIcon(R.drawable.ic_baseline_map_24)
-                mapitem.title = "지도"
-
-                changeFragment(fragmentweelky)
-                true
-            }
-            R.id.navigation_lost_thing -> {
-                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
-                var navView: BottomNavigationView = findViewById(R.id.nav_view)
-                var menunav: Menu = navView.menu
-                var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
-
-                mapitem.setIcon(R.drawable.ic_baseline_map_24)
-                mapitem.title = "지도"
-
-                changeFragment(fragmentlostthing)
-                true
-            }
-            R.id.navigation_setting -> {
-                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
-                var navView: BottomNavigationView = findViewById(R.id.nav_view)
-                var menunav: Menu = navView.menu
-                var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
-
-                mapitem.setIcon(R.drawable.ic_baseline_map_24)
-                mapitem.title = "지도"
-
-                changeFragment(fragmentsetting)
-                true
-            }
-            R.id.navigation_map -> {
-                findViewById<FloatingActionButton>(R.id.addAblrDataFab).visibility = View.GONE
-                var navView: BottomNavigationView = findViewById(R.id.nav_view)
-                var menunav: Menu = navView.menu
-                var mapitem: MenuItem = menunav.findItem(R.id.navigation_map)
-
-                mapitem.setIcon(R.drawable.ic_baseline_search_24)
-                mapitem.title = "검색"
-
-                changeFragment(fragmentmap)
-                true
-            }
-            else -> false
+        findViewById<Button>(R.id.settings_button).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
-    }
 
-    private fun changeFragment(fragment: Fragment) {
-        if(fragment!=active) {
-            val ft: FragmentTransaction= supportFragmentManager.beginTransaction()
-            ft.replace(R.id.nav_host_fragment, fragment)
-            //ft.detach(active)
-            ft.commit()
-            active = fragment
+        findViewById<Button>(R.id.lost_and_found_register).setOnClickListener {
+            startActivity(Intent(this, LostAndFoundInsert::class.java))
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            var dString = HttpConnection.DownloadString("http://20.41.76.129/lostandfound")
+            dString = HttpConnection.PreParseJson(dString)
+            val json = Gson().fromJson(dString, Array<LostAndFoundInfo>::class.java)
+            json.forEach { Log.d("asdf", it.toString()) }
         }
     }
 
     override fun onBackPressed() {
         AlertDialog.Builder(this)
-            .setMessage("종료하시겠습니까?")
             .setTitle("종료")
-            .setPositiveButton("OK"){ _, _ -> finishAndRemoveTask()}
-            .setNegativeButton("NO"){ _, _ -> }
+            .setMessage("종료하시겠습니까?")
+            .setPositiveButton("Yes") { _, _ -> finishAndRemoveTask()}
+            .setNegativeButton("No") { _, _ -> }
             .create().show()
     }
 }

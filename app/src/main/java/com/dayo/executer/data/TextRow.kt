@@ -3,6 +3,7 @@ import android.graphics.Color
 import android.widget.TableRow
 import android.widget.TextView
 
+@Deprecated("This code is deprecated :D")
 class TextRow(context: Context, text: String): TableRow(context) {
     val textView = TextView(context)
     private fun addView(){

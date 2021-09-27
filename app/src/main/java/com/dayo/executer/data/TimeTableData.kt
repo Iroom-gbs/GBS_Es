@@ -8,6 +8,20 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.dayo.executer.R
 
+class NewHomeTimeTableRow(context: Context, timeTableData: TimeTableData): TableRow(context){
+    init {
+        val timeTextView = TextView(context)
+        timeTextView.text = timeTableData.timeidx
+        super.addView(timeTextView)
+        val subjectTextView = TextView(context)
+        subjectTextView.text = timeTableData.subjectInfo
+        super.addView(subjectTextView)
+        val teacherInfo = TextView(context)
+        teacherInfo.text = timeTableData.teacherInfo
+        super.addView(teacherInfo)
+    }
+}
+
 data class TimeTableData(val timeidx: String, val timeInfo: String, val subjectInfo: String, val teacherInfo: String, val roomInfo: String, val elseInfo: String, val changed: Boolean = false) {
     companion object {
         fun stringToTimeTableData(s: String): MutableList<MutableList<TimeTableData>> {

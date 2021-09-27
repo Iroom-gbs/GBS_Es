@@ -5,52 +5,49 @@ import android.content.Context.MODE_PRIVATE
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
-import android.net.NetworkRequest
 import android.util.Log
 import androidx.core.content.edit
 import com.dayo.executer.App
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.jsoup.HttpStatusException
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import kotlinx.coroutines.*
 import org.jsoup.Jsoup
-import java.io.EOFException
 import java.util.*
 
 
 class DataManager {
     companion object {
-        var weeklyTimeTableData = mutableListOf<MutableList<TimeTableData>>()
-        var timeTableData = mutableListOf<TimeTableData>()
-        var todayAblrTableData = mutableListOf<AblrData>()
-        var tmpAblrData = mutableListOf<AblrData>()
-        var mealData = mutableListOf<MutableList<MealData>>()
+        var weeklyTimeTableData = mutableListOf<MutableList<TimeTableData>>() // 주간 시간표 리스트
+        var timeTableData = mutableListOf<TimeTableData>() // 일일 시간표 리스트
+        var todayAblrTableData = mutableListOf<AblrData>() // 금일 학습실 신청 리스트
+        var tmpAblrData = mutableListOf<AblrData>() // 삭제 예정
+        var mealData = mutableListOf<MutableList<MealData>>() // 금일 급식 데이터
+        var lostAndFoundData = mutableListOf<LostAndFoundInfo>()
 
         private val sharedPref = App.appContext!!.getSharedPreferences("settings", MODE_PRIVATE)
-        var ablrID = ""
-        var ablrPW = ""
-        var asckPW = ""
-        var classInfo = ""
-        var noTempDataInHomeFragment = false
+        var ablrID = "" // 스마트 기숙관리 ID
+        var ablrPW = "" // 스마트 기숙관리 비밀번호
+        var asckPW = "" // 자가진단 비밀번호
+        var asckName = ""
+        var asckBirth = ""
+        var classInfo = "" // 학년, 반 번호
 
-        var asckDt = 0L
-        var asckDsel = 0L
-        var asckDs = 0L
-        var asckUseAdvOpt = false
-        var alwaysReceiveAsckAlert = false
+        var asckUseAdvOpt = false // (구) 자가진단 관련 고급 옵션 표시, (변경) 고급 옵션 표시
+        var alwaysReceiveAsckAlert = false // 아침마다 자가진단 데이터 수신 여부
 
-        var alwaysReceiveTimeTableData = false
-        var receiveSwdTimeTableData = false
+        var alwaysReceiveTimeTableData = false // 매 시간마다 시간표 수신 여부
+        var receiveSwdTimeTableData = false // 변경된 시간마다 시간표 수신 여부
 
-        var lowProtect = false
+        var lowProtect = false // 예측하지 못한 http 통신 허용 여부
 
-        var dayOfWeek = -1
+        var dayOfWeek = -1 // 말그대로 일주일중 몇번째날인가
 
-        var online = false
+        var online = false // 인터넷 연결 여부
 
-        var vifo = ""
+        var vifo = "" // 최신 버전 정보
 
-        var receiveDebugFCMData = false
+        var receiveDebugFCMData = false // FCM 디버깅 데이터 수신 여부
 
         fun saveSettings() {
             sharedPref.edit {
@@ -59,14 +56,12 @@ class DataManager {
                 putString("ablrID", ablrID)
                 putString("ablrPW", ablrPW)
                 putString("asckPW", asckPW)
+                putString("asckName", asckName)
+                putString("asckBirth", asckBirth)
                 putString("classInfo", classInfo)
-                putLong("asckDt", asckDt)
-                putLong("asckDsel", asckDsel)
-                putLong("asckDs", asckDs)
                 putBoolean("asckUseAdvOpt", asckUseAdvOpt)
                 putBoolean("alwaysReceiveAsckAlert", alwaysReceiveAsckAlert)
                 putBoolean("lowProtect", lowProtect)
-                putBoolean ("noTempDataInHomeFragment", noTempDataInHomeFragment)
                 putBoolean("alwaysReceiveTimeTableData", alwaysReceiveTimeTableData)
                 putBoolean("receiveSwdTimeTableData", receiveSwdTimeTableData)
                 putBoolean("receiveDebugFCMData", receiveDebugFCMData)
@@ -74,123 +69,110 @@ class DataManager {
             }
         }
 
+        /**
+         * @suppress Hello World
+         * @return 네트워크 정보 수신 성공시 true 반환, 실패시 false 반환, 서버가 닫힌경우엔 true를 반환합니다.
+         */
         fun loadSettings(): Boolean {
-            todayAblrTableData = mutableListOf()
-            mealData = mutableListOf()
+            CoroutineScope(Dispatchers.IO).launch {
+                //Clear list
+                todayAblrTableData = mutableListOf()
+                mealData = mutableListOf()
 
-            dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-            Log.d("asdf", dayOfWeek.toString())
-            val ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
-            for (i in AblrData.stringToAblrData(ablrData))
-                todayAblrTableData.add(i)
-            ablrID = sharedPref.getString("ablrID", "")!!
-            ablrPW = sharedPref.getString("ablrPW", "")!!
-            asckPW = sharedPref.getString("asckPW", "")!!
-            classInfo = sharedPref.getString("classInfo", "1-1")!!
-            asckDt = sharedPref.getLong("asckDt", 10L)
-            asckDsel = sharedPref.getLong("asckDsel", 1500L)
-            asckDs = sharedPref.getLong("asckDs", 1000L)
-            asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
-            alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
-            lowProtect = sharedPref.getBoolean("lowProtect", false)
-            noTempDataInHomeFragment = sharedPref.getBoolean("noTempDataInHomeFragment", false)
-            alwaysReceiveTimeTableData = sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
-            receiveSwdTimeTableData = sharedPref.getBoolean("receiveSwdTimeTableData", false)
-            receiveDebugFCMData = sharedPref.getBoolean("receiveDebugFCMData", false)
-            tmpAblrData = mutableListOf()
-            tmpAblrData.addAll(todayAblrTableData)
+                dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+                Log.d("asdf", dayOfWeek.toString())
+
+                //Initialize data from sharedPreference
+                val ablrData = sharedPref.getString("ablr$dayOfWeek", "")!!
+                for (i in AblrData.stringToAblrData(ablrData))
+                    todayAblrTableData.add(i)
+                ablrID = sharedPref.getString("ablrID", "")!!
+                ablrPW = sharedPref.getString("ablrPW", "")!!
+                asckName = sharedPref.getString("asckName", "")!!
+                asckBirth = sharedPref.getString("asckBirth", "")!!
+                asckPW = sharedPref.getString("asckPW", "")!!
+                classInfo = sharedPref.getString("classInfo", "1-1")!!
+                asckUseAdvOpt = sharedPref.getBoolean("asckUseAdvOpt", false)
+                alwaysReceiveAsckAlert = sharedPref.getBoolean("alwaysReceiveAsckAlert", false)
+                lowProtect = sharedPref.getBoolean("lowProtect", false)
+                alwaysReceiveTimeTableData =
+                    sharedPref.getBoolean("alwaysReceiveTimeTableData", false)
+                receiveSwdTimeTableData = sharedPref.getBoolean("receiveSwdTimeTableData", false)
+                receiveDebugFCMData = sharedPref.getBoolean("receiveDebugFCMData", false)
+                tmpAblrData = mutableListOf()
+                tmpAblrData.addAll(todayAblrTableData)
+            }
             return loadNetworkData()
         }
 
         private fun loadNetworkData(): Boolean {
-            if (!online) return false
-            var fin = false
-            var er = false
-            CoroutineScope(Dispatchers.Default).launch {
-                while(true) {
-                    try {
-                        val doc = Jsoup.connect("http://20.41.76.129/gbses/version")
-                            .ignoreContentType(true).get()
-                        vifo = doc.body().text()
-                        break
-                    } catch (e: HttpStatusException) {
-                        Log.d("httpException", e.statusCode.toString())
-                        if(e.statusCode == 502) {
-                            timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-                            vifo = "2.1.1"
-                            mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
-                            er = true
-                            break
+            //Check is user online
+            if(!online) return false
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    //Get least version info
+                    vifo = HttpConnection.DownloadString("http://20.41.76.129/gbses/version")
+                    //Get Timetable info
+                    var tableData =
+                        HttpConnection.DownloadString("http://20.41.76.129/api/timetable?grade=${classInfo[0]}&cls=${classInfo[2]}")
+                    tableData = tableData.replace("null", "").replace("\\\"", "\"").trim('\"')
+                    Log.d("asdf", tableData)
+                    val timeTableJson =
+                        JsonParser.parseString(tableData).asJsonArray[dayOfWeek - 2].asJsonObject.getAsJsonArray(
+                            "data"
+                        ).asJsonArray
+                    for (x in timeTableJson)
+                        timeTableData.add(
+                            TimeTableData(
+                                x.asJsonObject.get("time").asString,
+                                x.asJsonObject.get("timeString").asString,
+                                x.asJsonObject.get("subject").asString,
+                                x.asJsonObject.get("teacher").asString,
+                                x.asJsonObject.get("location").asString,
+                                "",
+                                x.asJsonObject.get("changed").asBoolean
+                            )
+                        )
+                    if (timeTableData.size == 0)
+                        timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
+
+                    //Get meal info
+                    val mdt = HttpConnection.DownloadString("http://20.41.76.129/api/meal")
+                    var idx = 0
+                    if (mdt == "Not parsed yet" || mdt == "") {
+                        mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
+                    } else if (mdt == "*| *| *| ") {
+                        mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
+                    } else {
+                        mealData.add(mutableListOf())
+                        for (x in mdt.split(' ')) {
+                            if (x == "석식") break
+                            if (x == "*|") {
+                                mealData.add(mutableListOf())
+                                Log.d("asdf", mealData[idx].joinToString())
+                                idx++
+                                if (idx == 3) break
+                            } else {
+                                mealData[idx].add(MealData.stringToMealData(x))
+                            }
                         }
                     }
-                    catch (e: EOFException) { }
-                }
-                fin = true
-            }
-            while(!fin) { }
-            if(er) return true
-            var tableData = ""
-            CoroutineScope(Dispatchers.Default).launch {
-                while(true) {
-                    try {
-                        val doc =
-                            Jsoup.connect("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
-                                .ignoreContentType(true).get()
-                        tableData = doc.body().text()
-                        break
-                    } catch (e: EOFException) { }
+                    var dString = HttpConnection.DownloadString("http://20.41.76.129/lostandfound")
+                    dString = HttpConnection.PreParseJson(dString)
+                    val json = Gson().fromJson(dString, Array<LostAndFoundInfo>::class.java)
+                    json.forEach { lostAndFoundData.add(it) }
+                } catch (_: Exception) {
+                    //When server closed like Gateway error(502) or not found(404)
+                    timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
+                    vifo = "2.1.1"
+                    mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
                 }
             }
-            while (tableData == "")
-                Thread.sleep(100)
-            tableData = tableData.replace("null", "")
-            Log.d("asdf", tableData)
-            if (tableData == "not parsed yet") {
-                timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-            } else {
-                weeklyTimeTableData = TimeTableData.stringToTimeTableData(tableData)
-                timeTableData = weeklyTimeTableData[dayOfWeek - 1]
-                if (timeTableData.size == 0)
-                    timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
-            }
-            var mdt = ""
-            CoroutineScope(Dispatchers.Default).launch {
-                while(true) {
-                    try {
-                        val doc = Jsoup.connect("http://20.41.76.129/api/meal/")
-                            .ignoreContentType(true).get()
-                        mdt = doc.body().text()
-                        Log.d("asdf", mdt)
-                        break
-                    } catch (e: EOFException) { }
-                }
-            }
-            while (mdt == "")
-                Thread.sleep(100)
-            mdt = mdt.replace("null", "")
-            var idx = 0
-            if (mdt == "Not parsed yet" || mdt == "") {
-                mealData.add(mutableListOf(MealData("서버 오류!", MealData.allFalseList)))
-            } else if (mdt == "*| *| *| ") {
-                mealData.add(mutableListOf(MealData("급식 정보가 없습니다.", MealData.allFalseList)))
-            } else {
-                mealData.add(mutableListOf())
-                for (x in mdt.split(' ')) {
-                    if (x == "석식") break
-                    if (x == "*|") {
-                        mealData.add(mutableListOf())
-                        Log.d("asdf", mealData[idx].joinToString())
-                        idx++
-                        if (idx == 3) break
-                    } else {
-                        mealData[idx].add(MealData.stringToMealData(x))
-                    }
-                }
-            }
-            Log.d("asdf", "asdf")
             return true
         }
+
         init{
+            //유저의 인터넷 연결 상테 변경시 발생하는 콜백 함수 생성
             try {
                 (App.appContext!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
                     .registerDefaultNetworkCallback(object : NetworkCallback() {

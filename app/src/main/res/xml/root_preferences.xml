@@ -1,94 +1,83 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="시간표">
         <ListPreference
-            app:title="학년 / 반 설정"
+            app:key="class"
             app:summary="학년과 반을 설정해주세요."
-            app:key="class" />
+            app:title="학년 / 반 설정" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="학습실 신청 설정">
         <EditTextPreference
-            app:title="ID"
             app:key="ablrID"
-            app:summary="스마트 기숙관리 시스템의 id를 입력하세요." />
+            app:summary="스마트 기숙관리 시스템의 id를 입력하세요."
+            app:title="ID" />
         <EditTextPreference
-            app:title="비밀번호"
             app:key="ablrPW"
-            app:summary="스마트 기숙관리 시스템의 비밀번호를 입력하세요." />
-        <SwitchPreference
-            app:title="Home에서 편집한 데이터를 영구히 저장"
-            app:key="saveHomeFragmentEditedData"
-            app:summaryOn="Home에서 편집한 데이터를 자동으로 동기화합니다."
-            app:summaryOff="Home에서 편집한 데이터를 자동으로 동기화하지 않습니다.\n설정시 기존 데이터는 사라집니다." />
+            app:summary="스마트 기숙관리 시스템의 비밀번호를 입력하세요."
+            app:title="비밀번호" />
 
     </PreferenceCategory>
 
     <PreferenceCategory app:title="자가진단 자동화">
         <EditTextPreference
-            app:title="비밀번호"
+            app:key="asckName"
+            app:summary="자가진단 진행을 위한 이름"
+            app:title="이름" />
+
+        <EditTextPreference
+            app:key="asckBirth"
+            app:summary="자가진단 진행을 위한 생년월일"
+            app:title="생일" />
+
+        <EditTextPreference
             app:key="asckPW"
-            app:summary="자가진단할때 사용하는 비밀번호를 입력하세요." />
+            app:summary="자가진단할때 사용하는 비밀번호를 입력하세요."
+            app:title="비밀번호" />
 
         <SwitchPreference
-            app:title="매일 아침 자가진단 알림받기"
             app:key="asckAlert"
+            app:summaryOff="매일 아침 자가진단 알림을 받지 않습니다."
             app:summaryOn="매일 아침 자가진단 알림을 받습니다."
-            app:summaryOff="매일 아침 자가진단 알림을 받지 않습니다." />
-
-        <SwitchPreference
-            app:title="Use advanced options"
-            app:defaultValue="false"
-            app:key="asckAdv" />
-
-        <EditTextPreference
-            app:title="dt"
-            app:dependency="asckAdv"
-            app:summary="Delay time in automatic self check logic"
-            app:key="dt" />
-
-        <EditTextPreference
-            app:title="dsel"
-            app:dependency="asckAdv"
-            app:summary="Delay time in automatic self check selection logic"
-            app:key="dsel" />
-
-        <EditTextPreference
-            app:title="ds"
-            app:dependency="asckAdv"
-            app:summary="Delay time in automatic self check logic starts"
-            app:key="ds" />
+            app:title="매일 아침 자가진단 알림받기" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="시간표" >
+    <PreferenceCategory app:title="시간표">
         <SwitchPreference
-            app:title="변경된 시간표 알림 수신하기"
             app:key="timetable_swd"
-            app:summary="변경된 시간표를 알림으로 알려줍니다." />
+            app:summary="변경된 시간표를 알림으로 알려줍니다."
+            app:title="변경된 시간표 알림 수신하기" />
 
         <SwitchPreference
-            app:title="매시간 시간표 알림 수신하기"
-            app:key="timetable_always"
             app:dependency="timetable_swd"
-            app:summary="매시간 시간표를 알림으로 알려줍니다.\n이 기능을 사용하기 위해선 변경된 시간표 알림을 받아야합니다." />
+            app:key="timetable_always"
+            app:summary="매시간 시간표를 알림으로 알려줍니다.\n이 기능을 사용하기 위해선 변경된 시간표 알림을 받아야합니다."
+            app:title="매시간 시간표 알림 수신하기" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="일반">
         <Preference
-            app:title="데이터 다시 로드"
             app:key="reloadData"
-            app:summary="앱의 데이터를 다시 로드합니다." />
+            app:summary="앱의 데이터를 다시 로드합니다."
+            app:title="데이터 다시 로드" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Dev">
-        <SwitchPreference
-            app:title="Receive DEBUG FCM Data"
-            app:key="debugFCM" />
+    <PreferenceCategory android:title="Developers" >
         <Preference app:title="Dayo" />
         <Preference app:title="Kiroo" />
         <Preference app:title="Hegel" />
-        <Preference />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="고급">
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="asckAdv"
+            app:title="고급 옵션 사용" />
+
+        <SwitchPreference
+            app:dependency="asckAdv"
+            app:key="debugFCM"
+            app:title="Debug: Receive DEBUG FCM Data" />
     </PreferenceCategory>
 </PreferenceScreen>
