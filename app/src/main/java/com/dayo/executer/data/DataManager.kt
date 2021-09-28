@@ -9,9 +9,12 @@ import android.util.Log
 import androidx.core.content.edit
 import com.dayo.executer.App
 import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import java.util.*
+
 
 class DataManager {
     companion object {
@@ -110,17 +113,29 @@ class DataManager {
                     //Get least version info
                     vifo = HttpConnection.DownloadString("http://20.41.76.129/gbses/version")
                     //Get Timetable info
-                    var tableData = HttpConnection.DownloadString("http://20.41.76.129/api/timetable/${classInfo[0]}/${classInfo[2]}")
-                    tableData = tableData.replace("null", "")
+                    var tableData =
+                        HttpConnection.DownloadString("http://20.41.76.129/api/timetable?grade=${classInfo[0]}&cls=${classInfo[2]}")
+                    tableData = tableData.replace("null", "").replace("\\\"", "\"").trim('\"')
                     Log.d("asdf", tableData)
-                    if (tableData == "not parsed yet") {
-                        timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
-                    } else {
-                        weeklyTimeTableData = TimeTableData.stringToTimeTableData(tableData)
-                        timeTableData = weeklyTimeTableData[dayOfWeek - 1]
-                        if (timeTableData.size == 0)
-                            timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
-                    }
+                    val timeTableJson =
+                        JsonParser.parseString(tableData).asJsonArray[dayOfWeek - 2].asJsonObject.getAsJsonArray(
+                            "data"
+                        ).asJsonArray
+                    for (x in timeTableJson)
+                        timeTableData.add(
+                            TimeTableData(
+                                x.asJsonObject.get("time").asString,
+                                x.asJsonObject.get("timeString").asString,
+                                x.asJsonObject.get("subject").asString,
+                                x.asJsonObject.get("teacher").asString,
+                                x.asJsonObject.get("location").asString,
+                                "",
+                                x.asJsonObject.get("changed").asBoolean
+                            )
+                        )
+                    if (timeTableData.size == 0)
+                        timeTableData.add(TimeTableData("정규수업이 없습니다!", "", "", "", "", ""))
+
                     //Get meal info
                     val mdt = HttpConnection.DownloadString("http://20.41.76.129/api/meal")
                     var idx = 0
@@ -146,8 +161,7 @@ class DataManager {
                     dString = HttpConnection.PreParseJson(dString)
                     val json = Gson().fromJson(dString, Array<LostAndFoundInfo>::class.java)
                     json.forEach { lostAndFoundData.add(it) }
-                }
-                catch(_: Exception){
+                } catch (_: Exception) {
                     //When server closed like Gateway error(502) or not found(404)
                     timeTableData.add(TimeTableData("서버 오류!", "", "", "", "", ""))
                     vifo = "2.1.1"

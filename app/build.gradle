@@ -4,6 +4,7 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+// Android SDK 31버전 버그로 인해 당분간 SDK 30 유지
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
